@@ -2,22 +2,20 @@
 # Makefile Genérico :: Módulo 2. Curso Experto Desarrollo Videojuegos
 # Carlos González Morcillo     Escuela Superior de Informática (UCLM)
 # --------------------------------------------------------------------
+EXEC := PacMan
 
 DIRSRC := src/
 DIROBJ := obj/
 DIRHEA := include/
-DIREXE := exe/
-
-EXEC := $(DIREXE)PacMan
 
 CXX := g++
 
 # Flags de compilación -----------------------------------------------
-CXXFLAGS := `pkg-config --cflags OGRE` -I$(DIRHEA) -Wall
+CXXFLAGS := -I$(DIRHEA) -Wall `pkg-config --cflags OIS OGRE` 
 
 # Flags del linker ---------------------------------------------------
 LDFLAGS := `pkg-config --libs-only-L OGRE`
-LDLIBS := `pkg-config --libs-only-l OGRE` -lGL -lOIS -lstdc++ -lboost_system -lSDL -lSDL_mixer
+LDLIBS := `pkg-config --libs-only-l gl OIS OGRE` -lstdc++ -lboost_system
 
 # Modo de compilación (-mode=release -mode=debug) --------------------
 ifeq ($(mode), release) 
@@ -42,7 +40,6 @@ info:
 	@echo '------------------------------------------------------'
 
 dirs:
-	mkdir -p $(DIREXE)
 	mkdir -p $(DIROBJ)
 
 # Enlazado -----------------------------------------------------------
@@ -56,4 +53,4 @@ $(DIROBJ)%.o: $(DIRSRC)%.cpp
 # Limpieza de temporales ---------------------------------------------
 clean:
 	rm -f *.log $(EXEC) *~ $(DIRSRC)*~ $(DIRHEA)*~ 
-	rm -rf $(DIROBJ) $(DIREXE)
+	rm -rf $(DIROBJ)
