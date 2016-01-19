@@ -103,3 +103,4 @@ PlayState::getSingleton ()
   assert(msSingleton);
   return *msSingleton;
 }
+
