@@ -18,42 +18,46 @@
  * General Public License for more details.  
  *********************************************************************/
 
-#define UNUSED_VARIABLE(x) (void)x
+#ifndef MenuState_H
+#define MenuState_H
 
-#include "GameManager.h"
-#include "IntroState.h"
-#include "MenuState.h"
-#include "PlayState.h"
-#include "PauseState.h"
+#include <Ogre.h>
+#include <OIS/OIS.h>
 
-#include <iostream>
+#include "GameState.h"
 
-using namespace std;
+class MenuState : public Ogre::Singleton<MenuState>, public GameState
+{
+ public:
+  MenuState() {}
 
-int main () {
+  void enter ();
+  void exit ();
+  void pause ();
+  void resume ();
 
-  GameManager* game = new GameManager();
-  IntroState* introState = new IntroState();
-  MenuState* menuState = new MenuState();
-  PlayState* playState = new PlayState();
-  PauseState* pauseState = new PauseState();
+  void keyPressed (const OIS::KeyEvent &e);
+  void keyReleased (const OIS::KeyEvent &e);
 
-  UNUSED_VARIABLE(introState);
-  UNUSED_VARIABLE(menuState);
-  UNUSED_VARIABLE(playState);
-  UNUSED_VARIABLE(pauseState);
-    
-  try
-    {
-      // Inicializa el juego y transición al primer estado.
-      game->start(IntroState::getSingletonPtr());
-    }
-  catch (Ogre::Exception& e)
-    {
-      std::cerr << "Excepción detectada: " << e.getFullDescription();
-    }
-  
-  delete game;
-  
-  return 0;
-}
+  void mouseMoved (const OIS::MouseEvent &e);
+  void mousePressed (const OIS::MouseEvent &e, OIS::MouseButtonID id);
+  void mouseReleased (const OIS::MouseEvent &e, OIS::MouseButtonID id);
+
+  bool frameStarted (const Ogre::FrameEvent& evt);
+  bool frameEnded (const Ogre::FrameEvent& evt);
+
+  // Heredados de Ogre::Singleton.
+  static MenuState& getSingleton ();
+  static MenuState* getSingletonPtr ();
+
+ protected:
+  Ogre::Root* _root;
+  Ogre::SceneManager* _sceneMgr;
+  Ogre::Viewport* _viewport;
+  Ogre::Camera* _camera;
+
+  void createScene();
+  bool _exitGame;
+};
+
+#endif

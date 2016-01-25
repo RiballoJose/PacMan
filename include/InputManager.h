@@ -23,6 +23,7 @@
 
 #include <Ogre.h>
 #include <OIS/OIS.h>
+#include <CEGUI.h>
 
 // Gestor para los eventos de entrada (teclado y ratón).
 class InputManager : public Ogre::Singleton<InputManager>, public OIS::KeyListener, public OIS::MouseListener {
@@ -77,5 +78,7 @@ class InputManager : public Ogre::Singleton<InputManager>, public OIS::KeyListen
   std::map<std::string, OIS::MouseListener*>::iterator itMouseListener;
   std::map<std::string, OIS::KeyListener*>::iterator itKeyListenerEnd;
   std::map<std::string, OIS::MouseListener*>::iterator itMouseListenerEnd;
+
+  CEGUI::MouseButton convertMouseButton(OIS::MouseButtonID id);
 };
 #endif

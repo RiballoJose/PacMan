@@ -11,10 +11,10 @@ DIRHEA := include/
 CXX := g++
 
 # Flags de compilación -----------------------------------------------
-CXXFLAGS := -I$(DIRHEA) -Wall `pkg-config --cflags OIS OGRE` 
+CXXFLAGS := -I $(DIRHEA) -Wall -I/usr/local/include/cegui-0/CEGUI -I/usr/local/include/cegui-0 `pkg-config --cflags OGRE` `pkg-config --cflags OIS`
 
 # Flags del linker ---------------------------------------------------
-LDFLAGS := `pkg-config --libs-only-L OGRE`
+LDFLAGS :=  `pkg-config --libs OGRE` -lOIS -lGL -lstdc++ -lboost_system  -lCEGUIBase-0 -lCEGUIOgreRenderer-0
 LDLIBS := `pkg-config --libs-only-l gl OIS OGRE` -lstdc++ -lboost_system
 
 # Modo de compilación (-mode=release -mode=debug) --------------------
