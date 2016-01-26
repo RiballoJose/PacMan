@@ -15,8 +15,8 @@ PlayState::enter ()
   // Nuevo background colour.
   _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 1.0));
 
-  LoadLevels(1);
-
+  LoadLevels();
+  PrintLevel(1);
   _exitGame = false;
 }
 
@@ -107,7 +107,7 @@ PlayState::getSingleton ()
 }
 
 void
-PlayState::LoadLevels(int level)
+PlayState::LoadLevels()
 {
   std::ifstream file("niveles.txt");
   int i = 0, j = 0;
@@ -125,6 +125,38 @@ PlayState::LoadLevels(int level)
       j = 0;
     }
     file.close();
+  }
+}
+void
+PlayState::PrintLevel(int level)
+{
+  for(int f = (level-1)*(31); f < (level-1)*(31)+31; f++){
+    for(int c = 0; c < _columnas; c++){
+      switch(_levels[f][c]){
+      case 0://vacio
+	std::cout << 0;
+	break;
+      case 1://muros
+	std::cout << 1;
+	break;
+      case 2://boosters
+	std::cout << 2;
+	break;
+      case 3://comefantasmas
+	std::cout << 3;
+	break;
+      case 4://zona de fantasmas
+	std::cout << 4;
+	break;
+      case 5://donde empieza el pacman
+	std::cout << 5;
+	break;
+      default:
+	std::cout << 6;
+	break;
+      }
+    }
+    std::cout << '\n';
   }
 }
   
