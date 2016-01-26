@@ -50,11 +50,16 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   static PlayState& getSingleton ();
   static PlayState* getSingletonPtr ();
 
+  void LoadLevels(int level);
+
  protected:
   Ogre::Root* _root;
   Ogre::SceneManager* _sceneMgr;
   Ogre::Viewport* _viewport;
   Ogre::Camera* _camera;
+
+  int _filas, _columnas;
+  int** _levels;
 
   bool _exitGame;
 };

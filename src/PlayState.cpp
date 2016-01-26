@@ -15,6 +15,8 @@ PlayState::enter ()
   // Nuevo background colour.
   _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 1.0));
 
+  LoadLevels(1);
+
   _exitGame = false;
 }
 
@@ -104,3 +106,25 @@ PlayState::getSingleton ()
   return *msSingleton;
 }
 
+void
+PlayState::LoadLevels(int level)
+{
+  std::ifstream file("niveles.txt");
+  int i = 0, j = 0;
+  std::string str;
+  if(file.is_open()){
+    _filas = 124; _columnas = 28;//cada nivel tiene 31 filas
+    _levels = new int*[_filas];
+    while(getline(file, str)){
+      _levels[i] = new int[_columnas];
+      for(std::string::iterator it = str.begin(); it != str.end(); ++it){
+	_levels[i][j] = *it-48;//'0' = 48 en ascii
+	j++;
+      }
+      i++;
+      j = 0;
+    }
+    file.close();
+  }
+}
+  
