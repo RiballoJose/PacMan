@@ -7,19 +7,98 @@ void
 PlayState::enter ()
 {
   _root = Ogre::Root::getSingletonPtr();
-
+  _currentLevel = 1;
   // Se recupera el gestor de escena y la cámara.
   _sceneMgr = _root->getSceneManager("SceneManager");
   _camera = _sceneMgr->getCamera("IntroCamera");
   _viewport = _root->getAutoCreatedWindow()->addViewport(_camera);
   // Nuevo background colour.
-  _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 1.0));
+  _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 0.0));
 
   LoadLevels();
-  PrintLevel(1);
+  _blqEstructura = _sceneMgr->getRootSceneNode()->createChildSceneNode("Level", Ogre::Vector3(0, 0, 0));
+  createScene();
   _exitGame = false;
 }
+void
+PlayState::createScene()
+{
+  Ogre::Entity* ent = NULL;
+  Ogre::SceneNode* nodo = NULL;
+  std::stringstream bloq, material;
+  bloq.str("");
 
+  _camera->setPosition(Ogre::Vector3(0, 40, 40));
+  _camera->lookAt(Ogre::Vector3(0, 0, 0));
+  
+  nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode("Escenario", Ogre::Vector3(0, 0, 0));
+  ent = _sceneMgr->createEntity("Escenario.mesh");
+  nodo->setScale(1.0,1.0,1.29);
+  nodo->translate(0.0,0.0,3.0);
+  nodo->attachObject(ent);
+
+  int aux = -13;
+  for(int i = 0; i < 3; i++){
+    bloq << "Life_" << i;
+    nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode((bloq.str()),Ogre::Vector3(aux, 0.5, 19.5));
+    ent = _sceneMgr->createEntity("Nave.mesh");
+    nodo->setScale(0.5, 0.5, 0.5);
+    nodo->attachObject(ent);
+    _lifes.push_back(nodo);
+
+    aux += 2; bloq.str("");
+  }//Fin for
+  aux = -14;
+  for(int f = (_currentLevel-1)*(31); f < (_currentLevel-1)*(31)+31; f++){
+    for(int c = 0; c < _columnas; c++){
+      switch(_levels[f][c]){
+      case 0://vacio
+	bloq << "Void(" << f << "," << c << ")";
+	break;
+      case 1://muros
+	bloq << "Wall(" << f << "," << c << ")";
+	nodo = _blqEstructura->createChildSceneNode(bloq.str(), Ogre::Vector3(aux+0.5, 0.5, (((f-(_currentLevel-1)*31))-12)));
+	ent = _sceneMgr->createEntity(bloq.str(), "Bloque.mesh");
+	//ent->setMaterialName(material.str());
+	nodo->setScale(0.5, 1.0, 1.0);
+	nodo->attachObject(ent);
+	break;
+      case 2://Pac-dots segun wikipedia es la comida
+	bloq << "Pac-dot(" << f << "," << c << ")";
+	break;
+      case 3://comefantasmas
+	bloq << "Power-Pellet(" << f << "," << c << ")";
+	break;
+      case 4://zona de fantasmas
+	bloq << "Home(" << f << "," << c << ")";
+	break;
+      case 5://donde empieza el pacman
+	bloq << "Start(" << f << "," << c << ")";
+	break;
+      default:
+	break;
+      }
+      aux+=1;
+    }
+    aux = -14;
+  }
+  _sceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_MODULATIVE);
+  _sceneMgr->setShadowColour(Ogre::ColourValue(0.5, 0.5, 0.5) );
+  _sceneMgr->setAmbientLight(Ogre::ColourValue(0.9, 0.9, 0.9));
+  _sceneMgr->setShadowTextureCount(2);
+  _sceneMgr->setShadowTextureSize(512);
+
+  Ogre::Light *light = _sceneMgr->createLight("Light");
+  light->setType(Ogre::Light::LT_SPOTLIGHT);
+  light->setDirection(Ogre::Vector3(0,-1,0));
+  light->setSpotlightInnerAngle(Ogre::Degree(25.0f));
+  light->setSpotlightOuterAngle(Ogre::Degree(200.0f));
+  light->setPosition(0, 150, 0);
+  light->setSpecularColour(1, 1, 1);
+  light->setDiffuseColour(1, 1, 1);
+  light->setSpotlightFalloff(5.0f);
+  light->setCastShadows(true);
+}
 void
 PlayState::exit ()
 {
@@ -36,7 +115,7 @@ void
 PlayState::resume()
 {
   // Se restaura el background colour.
-  _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 1.0));
+  _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 0.0));
 }
 
 bool
@@ -127,36 +206,3 @@ PlayState::LoadLevels()
     file.close();
   }
 }
-void
-PlayState::PrintLevel(int level)
-{
-  for(int f = (level-1)*(31); f < (level-1)*(31)+31; f++){
-    for(int c = 0; c < _columnas; c++){
-      switch(_levels[f][c]){
-      case 0://vacio
-	std::cout << 0;
-	break;
-      case 1://muros
-	std::cout << 1;
-	break;
-      case 2://boosters
-	std::cout << 2;
-	break;
-      case 3://comefantasmas
-	std::cout << 3;
-	break;
-      case 4://zona de fantasmas
-	std::cout << 4;
-	break;
-      case 5://donde empieza el pacman
-	std::cout << 5;
-	break;
-      default:
-	std::cout << 6;
-	break;
-      }
-    }
-    std::cout << '\n';
-  }
-}
-  

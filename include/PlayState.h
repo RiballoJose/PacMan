@@ -51,7 +51,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   static PlayState* getSingletonPtr ();
 
   void LoadLevels();
-  void PrintLevel(int level);
+  void createScene();
 
  protected:
   Ogre::Root* _root;
@@ -61,7 +61,16 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
 
   int _filas, _columnas;
   int** _levels;
-
+  int _currentLevel;
+  
+  std::vector<Ogre::SceneNode*> _lifes;
+  Ogre::SceneNode* _pacman;
+  Ogre::SceneNode* _blinky;//fantasma rojo
+  Ogre::SceneNode* _pinky;//rosa
+  Ogre::SceneNode* _inky;//azul cian
+  Ogre::SceneNode* _clyde;//naranja
+  Ogre::SceneNode* _blqEstructura;
+  
   bool _exitGame;
 };
 
