@@ -52,6 +52,8 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
 
   void LoadLevels();
   void createScene();
+  void destroyAllAttachedMovableObjects(Ogre::SceneNode* node);
+  void removeScene();
 
  protected:
   Ogre::Root* _root;
@@ -62,6 +64,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   int _filas, _columnas;
   int** _levels;
   int _currentLevel;
+  int _perspective;
   
   std::vector<Ogre::SceneNode*> _lifes;
   Ogre::SceneNode* _pacman;

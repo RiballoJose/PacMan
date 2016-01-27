@@ -27,9 +27,10 @@ PlayState::createScene()
   Ogre::SceneNode* nodo = NULL;
   std::stringstream bloq, material;
   bloq.str("");
-
-  _camera->setPosition(Ogre::Vector3(0, 40, 40));
-  _camera->lookAt(Ogre::Vector3(0, 0, 0));
+  //Vista aerea
+  _perspective = 0;
+  _camera->setPosition(Ogre::Vector3(0, 42, 7));
+  _camera->lookAt(Ogre::Vector3(0, -50, 0));
   
   nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode("Escenario", Ogre::Vector3(0, 0, 0));
   ent = _sceneMgr->createEntity("Escenario.mesh");
@@ -65,15 +66,30 @@ PlayState::createScene()
 	break;
       case 2://Pac-dots segun wikipedia es la comida
 	bloq << "Pac-dot(" << f << "," << c << ")";
+	nodo = _blqEstructura->createChildSceneNode(bloq.str(), Ogre::Vector3(aux+0.5, 0.5, (((f-(_currentLevel-1)*31))-12)));
+	ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
+	//ent->setMaterialName(material.str());
+	nodo->setScale(0.5, 0.5, 0.5);
+	nodo->attachObject(ent);
 	break;
       case 3://comefantasmas
 	bloq << "Power-Pellet(" << f << "," << c << ")";
+	nodo = _blqEstructura->createChildSceneNode(bloq.str(), Ogre::Vector3(aux+0.5, 0.5, (((f-(_currentLevel-1)*31))-12)));
+	ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
+	//ent->setMaterialName(material.str());
+	nodo->setScale(1.0, 1.0, 1.0);
+	nodo->attachObject(ent);
 	break;
       case 4://zona de fantasmas
 	bloq << "Home(" << f << "," << c << ")";
 	break;
-      case 5://donde empieza el pacman
+      case 5://donde empieza el pacman->cuidado:tenemos dos 5s
 	bloq << "Start(" << f << "," << c << ")";
+	_pacman = _blqEstructura->createChildSceneNode(bloq.str(), Ogre::Vector3(aux+0.5, 0.5, (((f-(_currentLevel-1)*31))-12)));
+	ent = _sceneMgr->createEntity(bloq.str(), "Nave.mesh");
+	//ent->setMaterialName(material.str());
+	_pacman->setScale(0.5, 0.5, 0.5);
+	_pacman->attachObject(ent);
 	break;
       default:
 	break;
@@ -141,7 +157,22 @@ PlayState::keyPressed
 {
   // Tecla p --> PauseState.
   if (e.key == OIS::KC_P) {
-    pushState(PauseState::getSingletonPtr());
+    //pushState(PauseState::getSingletonPtr());
+  }
+  if (e.key == OIS::KC_C) {
+    _perspective = (_perspective+1) % 2;
+    switch(_perspective){
+    case 0:
+      //Vista aerea
+      _camera->setPosition(Ogre::Vector3(0, 42, 7));
+      _camera->lookAt(Ogre::Vector3(0, -50, 0));
+      break;
+    case 1:
+      //vista 3D
+      _camera->setPosition(Ogre::Vector3(0, 32, 37));
+      _camera->lookAt(Ogre::Vector3(0, 0, 0));
+      break;
+    }
   }
 }
 
