@@ -1,4 +1,4 @@
-#include "IntroState.h"
+  #include "IntroState.h"
 #include "MenuState.h"
 
 template<> IntroState* Ogre::Singleton<IntroState>::msSingleton = 0;
@@ -50,12 +50,12 @@ IntroState::createScene()
     _camera->lookAt(Ogre::Vector3(0, 2, 0));
     
     nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(
-        "Background", Ogre::Vector3(0, 0, -2));
+        "Background", Ogre::Vector3(0, 2.5, -2));
     ent = _sceneMgr->createEntity("Background.mesh");
     nodo->attachObject(ent);
     
     nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(
-        "Titulo", Ogre::Vector3(-0.5, 2, 0));
+        "Titulo", Ogre::Vector3(-2, 2, 0));
     ent = _sceneMgr->createEntity("Titulo.mesh");
     nodo->attachObject(ent);
 
