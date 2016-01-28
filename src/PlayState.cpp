@@ -173,7 +173,6 @@ PlayState::frameStarted
     _currentRow = (_pacman->getPosition().z)+_startRow;
     _currentCol = (_pacman->getPosition().x)+_startCol;
   }
-  
   return true;
 }
 
