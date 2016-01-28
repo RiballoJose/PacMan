@@ -7,7 +7,7 @@ void
 PlayState::enter ()
 {
   _root = Ogre::Root::getSingletonPtr();
-  _currentLevel = 1;
+  _currentLevel = 2;
   // Se recupera el gestor de escena y la cámara.
   _sceneMgr = _root->getSceneManager("SceneManager");
   _camera = _sceneMgr->getCamera("IntroCamera");
@@ -55,6 +55,7 @@ PlayState::createScene()
   aux = -14;
   for(int f = (_currentLevel-1)*(31); f < (_currentLevel-1)*(31)+31; f++){
     for(int c = 0; c < _columnas; c++){
+      bloq.str("");
       switch(_levels[f][c]){
       case 0://vacio
 	bloq << "Void(" << f << "," << c << ")";
@@ -108,7 +109,7 @@ PlayState::createScene()
 	//ent->setMaterialName(material.str());
 	nodo->setScale(0.2, 0.2, 0.2);
 	nodo->attachObject(ent);
-	nodo->setVisible(false);
+	//nodo->setVisible(false);
 	break;
       default:
 	break;
@@ -165,13 +166,20 @@ PlayState::frameStarted
   Ogre::Vector3 vn(0, 0, 0);
   _deltaT = evt.timeSinceLastFrame;
   if(!_endGame || !_endLevel){
-    if(_rightPress and _levels[(int)_currentRow][(int)(_currentCol+0.5)]!=1){vn.x = 2;}
-    else if(_leftPress and _levels[(int)_currentRow][(int)(_currentCol-0.5)]!=1){vn.x = -2;}
-    else if(_upPress and _levels[(int)(_currentRow-0.1)][(int)_currentCol]!=1){vn.z = -2;}
-    else if(_downPress and _levels[(int)(_currentRow+0.9)][(int)_currentCol]!=1){vn.z = 2;}
+    if(_rightPress and _levels[(int)(_currentRow+0.75)][(int)(_currentCol+0.5)]!=1 and _levels[(int)(_currentRow+0.1)][(int)(_currentCol+0.5)]!=1){vn.x = 2;}
+    else if(_leftPress and _levels[(int)(_currentRow+0.75)][(int)(_currentCol-0.5)]!=1 and _levels[(int)(_currentRow+0.1)][(int)(_currentCol-0.5)]!=1){vn.x = -2;}
+    else if(_upPress and _levels[(int)(_currentRow-0.01)][(int)(_currentCol+0.3)]!=1 and _levels[(int)(_currentRow-0.1)][(int)(_currentCol-0.3)]!=1){vn.z = -2;}
+    else if(_downPress and _levels[(int)(_currentRow+0.95)][(int)(_currentCol+0.3)]!=1 and _levels[(int)(_currentRow+0.9)][(int)(_currentCol-0.3)]!=1){vn.z = 2;}
     _pacman->translate(vn*_deltaT);
     _currentRow = (_pacman->getPosition().z)+_startRow;
     _currentCol = (_pacman->getPosition().x)+_startCol;
+  }
+  if (_levels[(int)_currentRow][(int)_currentCol]==2){
+    Ogre::SceneNode* nodo = NULL;
+    std::stringstream bloq;
+    bloq << "Pac-dot(" << (int)_currentRow << "," << (int)_currentCol << ")";
+    nodo = _sceneMgr->getSceneNode(bloq.str());
+    nodo->setVisible(false);
   }
   return true;
 }
@@ -209,15 +217,27 @@ PlayState::keyPressed
 	break;
       }
   case OIS::KC_RIGHT:
+    _leftPress = false;
+    _upPress = false;
+    _downPress = false;
     _rightPress = true;
     break;
   case OIS::KC_LEFT:
+    _rightPress = false;
+    _upPress = false;
+    _downPress = false;
     _leftPress = true;
     break;
   case OIS::KC_UP:
+    _downPress = false;
+    _rightPress = false;
+    _leftPress = false;
     _upPress = true;
     break;
   case OIS::KC_DOWN:
+    _rightPress = false;
+    _upPress = false;
+    _leftPress = false;
     _downPress = true;
     break;
   default:
@@ -233,7 +253,7 @@ PlayState::keyReleased
   case OIS::KC_ESCAPE:
     _exitGame = true;
     break;
-  case OIS::KC_RIGHT:
+    /*case OIS::KC_RIGHT:
     _rightPress = false;
     break;
   case OIS::KC_LEFT:
@@ -244,7 +264,7 @@ PlayState::keyReleased
     break;
   case OIS::KC_DOWN:
     _downPress = false;
-    break;
+    break;*/
   default:
     break;
   }
