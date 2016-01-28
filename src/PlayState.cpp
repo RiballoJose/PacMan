@@ -18,6 +18,9 @@ PlayState::enter ()
   LoadLevels();
   _blqEstructura = _sceneMgr->getRootSceneNode()->createChildSceneNode("Level", Ogre::Vector3(0, 0, 0));
   createScene();
+
+  _endPGame=_leftPress=_rightPress=_upPress=_downPress=_iniJuego= false;
+  _endGame=_endLevel=false;
   _exitGame = false;
 }
 void
@@ -66,7 +69,7 @@ PlayState::createScene()
 	break;
       case 2://Pac-dots segun wikipedia es la comida
 	bloq << "Pac-dot(" << f << "," << c << ")";
-	nodo = _blqEstructura->createChildSceneNode(bloq.str(), Ogre::Vector3(aux+0.5, 0.5, (((f-(_currentLevel-1)*31))-12)));
+	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux+0.5, 0.5, (((f-(_currentLevel-1)*31))-12)));
 	ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
 	//ent->setMaterialName(material.str());
 	nodo->setScale(0.5, 0.5, 0.5);
@@ -74,7 +77,7 @@ PlayState::createScene()
 	break;
       case 3://comefantasmas
 	bloq << "Power-Pellet(" << f << "," << c << ")";
-	nodo = _blqEstructura->createChildSceneNode(bloq.str(), Ogre::Vector3(aux+0.5, 0.5, (((f-(_currentLevel-1)*31))-12)));
+	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux+0.5, 0.5, (((f-(_currentLevel-1)*31))-12)));
 	ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
 	//ent->setMaterialName(material.str());
 	nodo->setScale(1.0, 1.0, 1.0);
@@ -84,12 +87,28 @@ PlayState::createScene()
 	bloq << "Home(" << f << "," << c << ")";
 	break;
       case 5://donde empieza el pacman->cuidado:tenemos dos 5s
-	bloq << "Start(" << f << "," << c << ")";
-	_pacman = _blqEstructura->createChildSceneNode(bloq.str(), Ogre::Vector3(aux+0.5, 0.5, (((f-(_currentLevel-1)*31))-12)));
-	ent = _sceneMgr->createEntity(bloq.str(), "Nave.mesh");
+	if(!_pacman){
+	  bloq << "Start(" << f << "," << c << ")";
+	  _pacman = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux+0.5, 0.5, (((f-(_currentLevel-1)*31))-12)));
+	  ent = _sceneMgr->createEntity(bloq.str(), "Nave.mesh");
+	  //ent->setMaterialName(material.str());
+	  _pacman->setScale(0.1, 0.5, 0.5);
+	  _pacman->translate(0.5,0,0);
+	  _pacman->attachObject(ent);
+	  _startRow = f-_pacman->getPosition().z;
+	  _startCol = (c-_pacman->getPosition().x)+1;
+	  _currentRow = _startRow;
+	  _currentCol = _startCol;
+	}
+	break;
+      case 6:
+	bloq << "Transporter(" << f << "," << c << ")";
+	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux+0.5, 0.5, (((f-(_currentLevel-1)*31))-12)));
+	ent = _sceneMgr->createEntity(bloq.str(), "Muro.mesh");
 	//ent->setMaterialName(material.str());
-	_pacman->setScale(0.5, 0.5, 0.5);
-	_pacman->attachObject(ent);
+	nodo->setScale(0.2, 0.2, 0.2);
+	nodo->attachObject(ent);
+	nodo->setVisible(false);
 	break;
       default:
 	break;
@@ -118,6 +137,11 @@ PlayState::createScene()
 void
 PlayState::exit ()
 {
+  for(int i = 0; i < _filas; i++){
+    delete [] _levels[i];
+  }
+  delete [] _levels;
+  
   _sceneMgr->clearScene();
   _root->getAutoCreatedWindow()->removeAllViewports();
 }
@@ -138,6 +162,19 @@ bool
 PlayState::frameStarted
 (const Ogre::FrameEvent& evt)
 {
+  Ogre::Vector3 vn(0, 0, 0);
+  _deltaT = evt.timeSinceLastFrame;
+
+  if(!_endGame || !_endLevel){
+    if(_rightPress and _levels[_currentRow][_currentCol+1]!=1){vn.x = 2;}
+    else if(_leftPress and _levels[_currentRow][_currentCol-1]!=1){vn.x = -2;}
+    else if(_upPress and _levels[_currentRow-1][_currentCol]!=1){vn.z = -2;}
+    else if(_downPress and _levels[_currentRow+1][_currentCol]!=1){vn.z = 2;}
+    _pacman->translate(vn*_deltaT);
+    _currentRow = (_pacman->getPosition().z+_startRow);
+    _currentCol = (_pacman->getPosition().x+_startCol);
+  }
+  
   return true;
 }
 
@@ -155,24 +192,38 @@ void
 PlayState::keyPressed
 (const OIS::KeyEvent &e)
 {
-  // Tecla p --> PauseState.
-  if (e.key == OIS::KC_P) {
-    //pushState(PauseState::getSingletonPtr());
-  }
-  if (e.key == OIS::KC_C) {
-    _perspective = (_perspective+1) % 2;
-    switch(_perspective){
-    case 0:
-      //Vista aerea
-      _camera->setPosition(Ogre::Vector3(0, 42, 7));
-      _camera->lookAt(Ogre::Vector3(0, -50, 0));
-      break;
-    case 1:
-      //vista 3D
-      _camera->setPosition(Ogre::Vector3(0, 32, 37));
-      _camera->lookAt(Ogre::Vector3(0, 0, 0));
-      break;
-    }
+  switch(e.key){
+  case OIS::KC_P:
+      //pushState(PauseState::getSingletonPtr());
+    break;
+  case OIS::KC_C:
+      _perspective = (_perspective+1) % 2;
+      switch(_perspective){
+      case 0:
+	//Vista aerea
+	_camera->setPosition(Ogre::Vector3(0, 42, 7));
+	_camera->lookAt(Ogre::Vector3(0, -50, 0));
+	break;
+      case 1:
+	//vista 3D
+	_camera->setPosition(Ogre::Vector3(0, 32, 37));
+	_camera->lookAt(Ogre::Vector3(0, 0, 0));
+	break;
+      }
+  case OIS::KC_RIGHT:
+    _rightPress = true;
+    break;
+  case OIS::KC_LEFT:
+    _leftPress = true;
+    break;
+  case OIS::KC_UP:
+    _upPress = true;
+    break;
+  case OIS::KC_DOWN:
+    _downPress = true;
+    break;
+  default:
+    break;
   }
 }
 
@@ -180,9 +231,27 @@ void
 PlayState::keyReleased
 (const OIS::KeyEvent &e)
 {
-  if (e.key == OIS::KC_ESCAPE) {
+  switch(e.key){
+  case OIS::KC_ESCAPE:
     _exitGame = true;
+    break;
+  case OIS::KC_RIGHT:
+    _rightPress = false;
+    break;
+  case OIS::KC_LEFT:
+    _leftPress = false;
+    break;
+  case OIS::KC_UP:
+    _upPress = false;
+    break;
+  case OIS::KC_DOWN:
+    _downPress = false;
+    break;
+  default:
+    break;
   }
+  std::cout << _currentRow << ',' << _currentCol << '\n';
+  std::cout << _levels[_currentRow][_currentCol] << '\n';
 }
 
 void

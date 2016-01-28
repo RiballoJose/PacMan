@@ -65,6 +65,10 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   int** _levels;
   int _currentLevel;
   int _perspective;
+  int _startRow, _currentRow, _startCol, _currentCol;
+
+  Ogre::Real _nSpeed, _bSpeed, _dSpeed, _btSpeed, _deltaT;
+  bool _endGame, _endPGame, _leftPress, _rightPress, _upPress, _downPress, _iniJuego, _endLevel;
   
   std::vector<Ogre::SceneNode*> _lifes;
   Ogre::SceneNode* _pacman;
