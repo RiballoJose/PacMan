@@ -159,21 +159,21 @@ PlayState::resume()
 }
 
 bool
-PlayState::frameStarted
-(const Ogre::FrameEvent& evt)
-{
-  Ogre::Vector3 vn(0, 0, 0);
-  _deltaT = evt.timeSinceLastFrame;
+  PlayState::frameStarted
+  (const Ogre::FrameEvent& evt)
+  {
+    Ogre::Vector3 vn(0, 0, 0);
+    _deltaT = evt.timeSinceLastFrame;
 
-  if(!_endGame || !_endLevel){
-    if(_rightPress and _levels[_currentRow][_currentCol+1]!=1){vn.x = 2;}
-    else if(_leftPress and _levels[_currentRow][_currentCol-1]!=1){vn.x = -2;}
-    else if(_upPress and _levels[_currentRow-1][_currentCol]!=1){vn.z = -2;}
-    else if(_downPress and _levels[_currentRow+1][_currentCol]!=1){vn.z = 2;}
-    _pacman->translate(vn*_deltaT);
-    _currentRow = (_pacman->getPosition().z+_startRow);
-    _currentCol = (_pacman->getPosition().x+_startCol);
-  }
+    if(!_endGame || !_endLevel){
+      if(_rightPress and _levels[_currentRow][_currentCol+1]!=1){vn.x = 2;}
+      else if(_leftPress and _levels[_currentRow][_currentCol-1]!=1){vn.x = -2;}
+      else if(_upPress and _levels[_currentRow-1][_currentCol]!=1){vn.z = -2;}
+      else if(_downPress and _levels[_currentRow+1][_currentCol]!=1){vn.z = 2;}
+      _pacman->translate(vn*_deltaT);
+      _currentRow = (_pacman->getPosition().z+_startRow);
+      _currentCol = (_pacman->getPosition().x+_startCol);
+    }
   
   return true;
 }
