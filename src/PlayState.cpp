@@ -33,8 +33,8 @@ PlayState::createScene()
   _camera->lookAt(Ogre::Vector3(0, -50, 0));
   
   nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode("Escenario", Ogre::Vector3(0, 0, 0));
-  ent = _sceneMgr->createEntity("Escenario.mesh");
-  nodo->setScale(1.0,1.0,1.29);
+  ent = _sceneMgr->createEntity("Base.mesh");
+  //nodo->setScale(1.0,1.0,1.29);
   nodo->translate(0.0,0.0,3.0);
   nodo->attachObject(ent);
 
@@ -59,9 +59,9 @@ PlayState::createScene()
       case 1://muros
 	bloq << "Wall(" << f << "," << c << ")";
 	nodo = _blqEstructura->createChildSceneNode(bloq.str(), Ogre::Vector3(aux+0.5, 0.5, (((f-(_currentLevel-1)*31))-12)));
-	ent = _sceneMgr->createEntity(bloq.str(), "Bloque.mesh");
+	ent = _sceneMgr->createEntity(bloq.str(), "Muro.mesh");
 	//ent->setMaterialName(material.str());
-	nodo->setScale(0.5, 1.0, 1.0);
+	nodo->setScale(0.5, 0.5, 0.5);
 	nodo->attachObject(ent);
 	break;
       case 2://Pac-dots segun wikipedia es la comida
