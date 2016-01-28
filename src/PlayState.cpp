@@ -167,8 +167,8 @@ PlayState::frameStarted
   if(!_endGame || !_endLevel){
     if(_rightPress and _levels[(int)_currentRow][(int)(_currentCol+0.5)]!=1){vn.x = 2;}
     else if(_leftPress and _levels[(int)_currentRow][(int)(_currentCol-0.5)]!=1){vn.x = -2;}
-    else if(_upPress and _levels[(int)(_currentRow-0.5)][(int)_currentCol]!=1){vn.z = -2;}
-    else if(_downPress and _levels[(int)(_currentRow+0.5)][(int)_currentCol]!=1){vn.z = 2;}
+    else if(_upPress and _levels[(int)(_currentRow-0.1)][(int)_currentCol]!=1){vn.z = -2;}
+    else if(_downPress and _levels[(int)(_currentRow+0.9)][(int)_currentCol]!=1){vn.z = 2;}
     _pacman->translate(vn*_deltaT);
     _currentRow = (_pacman->getPosition().z)+_startRow;
     _currentCol = (_pacman->getPosition().x)+_startCol;
