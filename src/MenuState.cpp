@@ -49,7 +49,7 @@ MenuState::createScene()
     _camera->setPosition(Ogre::Vector3(0, 0, 10));
     _camera->lookAt(Ogre::Vector3(0, 2, 0));
     
-    nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(
+    /*nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(
         "BackMenu", Ogre::Vector3(0, 0, -2));
     ent = _sceneMgr->createEntity("BMenu.mesh");
     nodo->attachObject(ent);
@@ -57,7 +57,7 @@ MenuState::createScene()
     nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(
         "Titulo", Ogre::Vector3(-0.5, 2, 0));
     ent = _sceneMgr->createEntity("Titulo.mesh");
-    nodo->attachObject(ent);
+    nodo->attachObject(ent);*/
 
     nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(
     "Pulsar", Ogre::Vector3(0, 0, 0));
