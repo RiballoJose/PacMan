@@ -61,7 +61,7 @@ MenuState::createScene()
 
     nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(
     "Pulsar", Ogre::Vector3(0, 0, 0));
-    ent = _sceneMgr->createEntity("Mesh.mesh");
+    ent = _sceneMgr->createEntity("Pulsar.mesh");
     nodo->attachObject(ent);
     nodo->yaw(Ogre::Degree(-90), Ogre::Node::TS_LOCAL);
 
