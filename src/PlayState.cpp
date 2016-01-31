@@ -42,6 +42,7 @@ PlayState::createScene()
   nodo->attachObject(ent);
 
   int aux = -13;
+  _lifes.reserve(3);
   for(int i = 0; i < 3; i++){
     bloq << "Life_" << i;
     nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode((bloq.str()),Ogre::Vector3(aux, 0.5, 19.5));
@@ -53,6 +54,7 @@ PlayState::createScene()
     aux += 2; bloq.str("");
   }//Fin for
   aux = -14;
+  _walls.reserve(_nwalls);
   for(int f = (_currentLevel-1)*(31); f < (_currentLevel-1)*(31)+31; f++){
     for(int c = 0; c < _columnas; c++){
       bloq.str("");
@@ -62,11 +64,12 @@ PlayState::createScene()
 	break;
       case 1://muros
 	bloq << "Wall(" << f << "," << c << ")";
-	nodo = _blqEstructura->createChildSceneNode(bloq.str(), Ogre::Vector3(aux+0.5, 0.5, (((f-(_currentLevel-1)*31))-12)));
+	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux+0.5, 0.5, (((f-(_currentLevel-1)*31))-12)));
 	ent = _sceneMgr->createEntity(bloq.str(), "Muro.mesh");
 	//ent->setMaterialName(material.str());
 	nodo->setScale(0.5, 0.5, 0.5);
 	nodo->attachObject(ent);
+	_walls.push_back(nodo);
 	break;
       case 2://Pac-dots segun wikipedia es la comida
 	bloq << "Pac-dot(" << f << "," << c << ")";
@@ -165,15 +168,18 @@ PlayState::frameStarted
 {
   Ogre::Vector3 vn(0, 0, 0);
   _deltaT = evt.timeSinceLastFrame;
-  if(!_endGame || !_endLevel){
-    /*if(_rightPress and _levels[(int)(_currentRow+0.75)][(int)(_currentCol+0.5)]!=1 and _levels[(int)(_currentRow+0.1)][(int)(_currentCol+0.5)]!=1){vn.x = 2;}
-    else if(_leftPress and _levels[(int)(_currentRow+0.75)][(int)(_currentCol-0.5)]!=1 and _levels[(int)(_currentRow+0.1)][(int)(_currentCol-0.5)]!=1){vn.x = -2;}
-    else if(_upPress and _levels[(int)(_currentRow-0.01)][(int)(_currentCol+0.3)]!=1 and _levels[(int)(_currentRow-0.1)][(int)(_currentCol-0.3)]!=1){vn.z = -2;}
-    else if(_downPress and _levels[(int)(_currentRow+0.95)][(int)(_currentCol+0.3)]!=1 and _levels[(int)(_currentRow+0.9)][(int)(_currentCol-0.3)]!=1){vn.z = 2;}*/
-    vn += colisionMap();
+  if((!_endGame || !_endLevel) and !colisionMap()){
+    if(_rightPress /*and _levels[(int)(_currentRow+0.75)][(int)(_currentCol+0.5)]!=1
+		     and _levels[(int)(_currentRow+0.1)][(int)(_currentCol+0.5)]!=1*/){vn.x = 2;}
+    else if(_leftPress /*and _levels[(int)(_currentRow+0.75)][(int)(_currentCol-0.5)]!=1
+			 and _levels[(int)(_currentRow+0.1)][(int)(_currentCol-0.5)]!=1*/){vn.x = -2;}
+    else if(_upPress/* and _levels[(int)(_currentRow-0.01)][(int)(_currentCol+0.3)]!=1
+		       and _levels[(int)(_currentRow-0.1)][(int)(_currentCol-0.3)]!=1*/){vn.z = -2;}
+    else if(_downPress/* and _levels[(int)(_currentRow+0.95)][(int)(_currentCol+0.3)]!=1
+			 and _levels[(int)(_currentRow+0.9)][(int)(_currentCol-0.3)]!=1*/){vn.z = 2;}
     _pacman->translate(vn*_deltaT);
-    _currentRow = (_pacman->getPosition().z)+_startRow;
-    _currentCol = (_pacman->getPosition().x)+_startCol;
+    _currentRow = int((_pacman->getPosition().z)+_startRow);
+    _currentCol = int((_pacman->getPosition().x)+_startCol);
   }
   if (_levels[(int)_currentRow][(int)_currentCol]==2){
     Ogre::SceneNode* nodo = NULL;
@@ -307,6 +313,7 @@ PlayState::LoadLevels()
 {
   std::ifstream file("niveles.txt");
   int i = 0, j = 0;
+  _nwalls = 0;
   std::string str;
   if(file.is_open()){
     _filas = 124; _columnas = 28;//cada nivel tiene 31 filas
@@ -315,6 +322,7 @@ PlayState::LoadLevels()
       _levels[i] = new int[_columnas];
       for(std::string::iterator it = str.begin(); it != str.end(); ++it){
 	_levels[i][j] = *it-48;//'0' = 48 en ascii
+	if(*it-48==1){_nwalls++;}
 	j++;
       }
       i++;
@@ -324,18 +332,62 @@ PlayState::LoadLevels()
   }
 }
 
-Ogre::Vector3
+bool
 PlayState::colisionMap()
 {
   
   Ogre::AxisAlignedBox bboxPac = _pacman->_getWorldAABB();
-  Ogre::AxisAlignedBox bboxWalls = _blqEstructura->_getWorldAABB();
-  Ogre::Vector3 move(0,0,0);
-  if(!bboxPac.intersects(bboxWalls)){
-    if(_rightPress){move.x=1;}
-    else if(_leftPress){move.x=-1;}
-    else if(_upPress){move.z=-1;}
-    else if(_downPress){move.z=1;}
+  Ogre::AxisAlignedBox bboxWall;
+
+  for(int i = 0; (unsigned) i < _walls.size(); i++){
+    //bboxWall = _walls[i]->_getWorldAABB();
+    //if(bboxPac.intersects(bboxWall)){return true;}
   }
-  return move;
+  return false;
+  
+  /*if(bboxPac.intersects(bboxWall)){return true;}
+  return false;*/
+  
+  /*wall.str("");
+  if(_rightPress){
+    wall << "Wall(" << (int)(_currentRow) << "," << (int)(_currentCol+1) <<")";
+    try{auxnode = _sceneMgr->getSceneNode(wall.str());}
+    catch(Ogre::ItemIdentityException){}
+    if(auxnode){
+      bboxWall = auxnode->_getWorldAABB();
+      if(!bboxPac.intersects(bboxWall)){move.x=1;}
+    }
+    else{move.x=1;}
+  }
+  else if(_leftPress){
+    wall << "Wall(" << (int)(_currentRow) << "," << (int)(_currentCol-1) <<")";
+    try{auxnode = _sceneMgr->getSceneNode(wall.str());}
+    catch(Ogre::ItemIdentityException){}
+    if(auxnode){
+      bboxWall = auxnode->_getWorldAABB();
+      if(!bboxPac.intersects(bboxWall)){move.x=-1;}
+    }
+    else{move.x=-1;}
+  }
+  else if(_upPress){
+    wall << "Wall(" << (int)(_currentRow-1) << "," << (int)(_currentCol) <<")";
+    try{auxnode = _sceneMgr->getSceneNode(wall.str());}
+    catch(Ogre::ItemIdentityException){}
+    if(auxnode){
+      bboxWall = auxnode->_getWorldAABB();
+      if(!bboxPac.intersects(bboxWall)){move.z=-1;}
+    }
+    else{move.z=-1;}
+  }
+  else if(_downPress){
+    wall << "Wall(" << (int)(_currentRow+1) << "," << (int)(_currentCol) <<")";
+    try{auxnode = _sceneMgr->getSceneNode(wall.str());}
+    catch(Ogre::ItemIdentityException){}
+    if(auxnode){
+      bboxWall = auxnode->_getWorldAABB();
+      if(!bboxPac.intersects(bboxWall)){move.z=1;}
+    }
+    else{move.z=1;}
+  }
+  return move;*/
 }
