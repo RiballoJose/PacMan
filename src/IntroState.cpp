@@ -55,12 +55,12 @@ IntroState::createScene()
     nodo->attachObject(ent);
     
     nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(
-        "Titulo", Ogre::Vector3(-2, 2, 0));
+        "Titulo", Ogre::Vector3(-1.5, 2, 0));
     ent = _sceneMgr->createEntity("Titulo.mesh");
     nodo->attachObject(ent);
 
     nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(
-    "Pulsar", Ogre::Vector3(-2.5, 0, 0));
+    "Pulsar", Ogre::Vector3(-2.0, 0, 0));
     ent = _sceneMgr->createEntity("Pulsar.mesh");
     nodo->attachObject(ent);
     nodo->yaw(Ogre::Degree(-90), Ogre::Node::TS_LOCAL);
@@ -96,7 +96,7 @@ IntroState::keyPressed
 {
   // Transición al siguiente estado.
   // Espacio --> PlayState
-  if (e.key == OIS::KC_RETURN) {
+  if (e.key == OIS::KC_RETURN or e.key == OIS::KC_SPACE) {
     changeState(MenuState::getSingletonPtr());
   }
 }

@@ -7,16 +7,16 @@ void
 PlayState::enter ()
 {
   _root = Ogre::Root::getSingletonPtr();
-  _currentLevel = 2;
-  // Se recupera el gestor de escena y la cámara.
+  _currentLevel = 1;
+  _pacSpeed = 2;
+		  
   _sceneMgr = _root->getSceneManager("SceneManager");
   _camera = _sceneMgr->getCamera("IntroCamera");
   _viewport = _root->getAutoCreatedWindow()->addViewport(_camera);
-  // Nuevo background colour.
-  _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 0.0));
 
   LoadLevels();
-  _blqEstructura = _sceneMgr->getRootSceneNode()->createChildSceneNode("Level", Ogre::Vector3(0, 0, 0));
+  _blqEstructura = _sceneMgr->getRootSceneNode()
+    ->createChildSceneNode("Walls", Ogre::Vector3(0, 0, 0));
   createScene();
 
   _endPGame=_leftPress=_rightPress=_upPress=_downPress=_iniJuego= false;
@@ -93,7 +93,7 @@ PlayState::createScene()
 	  _pacman = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux+0.5, 0.5, (((f-(_currentLevel-1)*31))-12)));
 	  ent = _sceneMgr->createEntity(bloq.str(), "Nave.mesh");
 	  //ent->setMaterialName(material.str());
-	  _pacman->setScale(0.1, 0.5, 0.5);
+	  _pacman->setScale(0.2, 0.5, 0.75);
 	  _pacman->translate(0.5,0,0);
 	  _pacman->attachObject(ent);
 	  _startRow = f-_pacman->getPosition().z;
@@ -166,10 +166,11 @@ PlayState::frameStarted
   Ogre::Vector3 vn(0, 0, 0);
   _deltaT = evt.timeSinceLastFrame;
   if(!_endGame || !_endLevel){
-    if(_rightPress and _levels[(int)(_currentRow+0.75)][(int)(_currentCol+0.5)]!=1 and _levels[(int)(_currentRow+0.1)][(int)(_currentCol+0.5)]!=1){vn.x = 2;}
+    /*if(_rightPress and _levels[(int)(_currentRow+0.75)][(int)(_currentCol+0.5)]!=1 and _levels[(int)(_currentRow+0.1)][(int)(_currentCol+0.5)]!=1){vn.x = 2;}
     else if(_leftPress and _levels[(int)(_currentRow+0.75)][(int)(_currentCol-0.5)]!=1 and _levels[(int)(_currentRow+0.1)][(int)(_currentCol-0.5)]!=1){vn.x = -2;}
     else if(_upPress and _levels[(int)(_currentRow-0.01)][(int)(_currentCol+0.3)]!=1 and _levels[(int)(_currentRow-0.1)][(int)(_currentCol-0.3)]!=1){vn.z = -2;}
-    else if(_downPress and _levels[(int)(_currentRow+0.95)][(int)(_currentCol+0.3)]!=1 and _levels[(int)(_currentRow+0.9)][(int)(_currentCol-0.3)]!=1){vn.z = 2;}
+    else if(_downPress and _levels[(int)(_currentRow+0.95)][(int)(_currentCol+0.3)]!=1 and _levels[(int)(_currentRow+0.9)][(int)(_currentCol-0.3)]!=1){vn.z = 2;}*/
+    vn += colisionMap();
     _pacman->translate(vn*_deltaT);
     _currentRow = (_pacman->getPosition().z)+_startRow;
     _currentCol = (_pacman->getPosition().x)+_startCol;
@@ -321,4 +322,20 @@ PlayState::LoadLevels()
     }
     file.close();
   }
+}
+
+Ogre::Vector3
+PlayState::colisionMap()
+{
+  
+  Ogre::AxisAlignedBox bboxPac = _pacman->_getWorldAABB();
+  Ogre::AxisAlignedBox bboxWalls = _blqEstructura->_getWorldAABB();
+  Ogre::Vector3 move(0,0,0);
+  if(!bboxPac.intersects(bboxWalls)){
+    if(_rightPress){move.x=1;}
+    else if(_leftPress){move.x=-1;}
+    else if(_upPress){move.z=-1;}
+    else if(_downPress){move.z=1;}
+  }
+  return move;
 }

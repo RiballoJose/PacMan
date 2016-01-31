@@ -52,6 +52,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
 
   void LoadLevels();
   void createScene();
+  Ogre::Vector3 colisionMap();
   void destroyAllAttachedMovableObjects(Ogre::SceneNode* node);
   void removeScene();
 
@@ -65,6 +66,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   int** _levels;
   int _currentLevel;
   int _perspective;
+  int _pacSpeed;
   double _startRow, _currentRow, _startCol, _currentCol;
 
   Ogre::Real _nSpeed, _bSpeed, _dSpeed, _btSpeed, _deltaT;
