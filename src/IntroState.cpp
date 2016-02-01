@@ -55,7 +55,7 @@ IntroState::createScene()
     nodo->attachObject(ent);
     
     nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(
-        "Titulo", Ogre::Vector3(-1.5, 2, 0));
+        "Titulo", Ogre::Vector3(2.75, 2, 0));
     ent = _sceneMgr->createEntity("Titulo.mesh");
     nodo->attachObject(ent);
 

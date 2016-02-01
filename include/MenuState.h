@@ -56,6 +56,18 @@ class MenuState : public Ogre::Singleton<MenuState>, public GameState
   Ogre::Viewport* _viewport;
   Ogre::Camera* _camera;
 
+  
+
+  Ogre::AnimationState* _anim;
+  Ogre::AnimationState* _animRotar;
+
+ private:
+
+  int _sel;
+  
+  Ogre::SceneNode* _nodo;
+  Ogre::SceneNode** _opciones;
+
   void createScene();
   bool _exitGame;
 };

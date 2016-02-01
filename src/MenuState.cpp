@@ -1,5 +1,6 @@
 #include "MenuState.h"
 #include "PlayState.h"
+#include <iostream> 
 
 template<> MenuState* Ogre::Singleton<MenuState>::msSingleton = 0;
 
@@ -11,10 +12,7 @@ MenuState::enter ()
 
   _sceneMgr = _root->getSceneManager("SceneManager");
 
-  _camera = _sceneMgr->createCamera("MenuCamera");
-  _camera->setPosition(Ogre::Vector3(0, 0, 0));
-  _camera->setNearClipDistance(5);
-  _camera->setFarClipDistance(10000);
+  _camera = _sceneMgr->getCamera("IntroCamera");
 
   _viewport = _root->getAutoCreatedWindow()->addViewport(_camera);
   _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 0.0));
@@ -43,27 +41,55 @@ void
 MenuState::createScene()
 {
     Ogre::Entity *ent = NULL;
-    Ogre::SceneNode *nodo = NULL;
-    
+    _nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(
+        "OpMenu", Ogre::Vector3(0, 0, 0));
+    Ogre::SceneNode *nodoAux = NULL;
 
-    _camera->setPosition(Ogre::Vector3(0, 0, 10));
-    _camera->lookAt(Ogre::Vector3(0, 2, 0));
-    
-    /*nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(
-        "BackMenu", Ogre::Vector3(0, 0, -2));
-    ent = _sceneMgr->createEntity("BMenu.mesh");
-    nodo->attachObject(ent);
-    
-    nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(
-        "Titulo", Ogre::Vector3(-0.5, 2, 0));
-    ent = _sceneMgr->createEntity("Titulo.mesh");
-    nodo->attachObject(ent);*/
+    std::stringstream nombre_act;
+    Ogre::String nombres[] = {"Jugar", "Records", "Creditos", "Salir"};
+    //_simpleEffect=
+    //_pSoundFXManager->load("FXMovPointer.ogg");
+    /* Iniciamos la variable de las opciones */
+    _sel = 0;
+    _opciones = new Ogre::SceneNode*[4];
 
-    nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(
-    "Pulsar", Ogre::Vector3(-2.0, 0, 0));
-    ent = _sceneMgr->createEntity("Pulsar.mesh");
-    nodo->attachObject(ent);
-    nodo->yaw(Ogre::Degree(-90), Ogre::Node::TS_LOCAL);
+    /* Posicion y vision de la camara */
+    _camera->setPosition(Ogre::Vector3(3, 2, 10));
+    _camera->lookAt(Ogre::Vector3(3, 2, 0));
+
+    /* Creacion de las opciones del menu */
+    for(int i = 0; i < 4; i++){
+        /* Cogemos el nombre de la que sera la opcion a crear */
+        nombre_act << nombres[i];
+
+        /* La agregamos al scenenode del menu */
+        nodoAux = _nodo->createChildSceneNode(nombre_act.str(), 
+            Ogre::Vector3(0, (3 - i), 0));
+
+        /* Creamos el nombre del mesh */
+        nombre_act << ".mesh";
+
+        /* Lo agregamos al nodo creado */
+        ent = _sceneMgr->createEntity(nombre_act.str());
+        nodoAux->attachObject(ent);
+
+        /* Guardamos valores y reiniciamos variables de apoyo */
+        _opciones[i] = nodoAux;
+        nombre_act.str("");
+    }//Fin for
+  /* Puntero */
+    nodoAux = _nodo->createChildSceneNode("Pointer", 
+        Ogre::Vector3(-1, 3.1, 0));
+    ent = _sceneMgr->createEntity("Pointer.mesh");
+    nodoAux->attachObject(ent);
+    
+    /*Background*/ 
+    nodoAux = _sceneMgr->getRootSceneNode()->createChildSceneNode("BMenu", 
+        Ogre::Vector3(-0.5, 0, -9));
+    ent = _sceneMgr->createEntity("Escenario.mesh");
+    nodoAux->pitch(Ogre::Degree(90));
+    nodoAux->attachObject(ent);
+    
 
     /* Iluminacion */
     Ogre::Light *light = _sceneMgr->createLight("Light");
