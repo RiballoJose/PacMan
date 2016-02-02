@@ -64,12 +64,12 @@ class MenuState : public Ogre::Singleton<MenuState>, public GameState
  private:
 
   int _sel;
-  
+
   Ogre::SceneNode* _nodo;
   Ogre::SceneNode** _opciones;
 
   void createScene();
-  bool _exitGame;
+  bool _exitGame, _op;
 };
 
 #endif

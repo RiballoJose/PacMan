@@ -2,6 +2,7 @@
 #include "PlayState.h"
 #include <iostream> 
 
+
 template<> MenuState* Ogre::Singleton<MenuState>::msSingleton = 0;
 
 void
@@ -18,7 +19,7 @@ MenuState::enter ()
   _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 0.0));
 
   createScene();
-  _exitGame = false;
+  _exitGame = false; _op=false;
 }
 void
 MenuState::exit()
@@ -126,11 +127,53 @@ void
 MenuState::keyPressed
 (const OIS::KeyEvent &e)
 {
+     /* Valores maximos y minimos */
+    Ogre::Real min = 0.2;
+    Ogre::Real max = 3.2;
+
+    /* Cogemos el scenenode del puntero */
+    Ogre::Node* p = _nodo->getChild("Puntero");
+    /* Posicion actual del puntero */
+    Ogre::Vector3 pos = p->getPosition();
+
+    switch(e.key){
+        case OIS::KC_UP:
+            if(!_op){
+              std::cout << "Hola 1" << std::endl;
+                if((pos[1] + 1) <= max){
+                    _sel -= 1;
+                    p->setPosition(pos[0], (pos[1] + 1), pos[2]);
+                } else {
+                    _sel = 3;
+                    p->setPosition(pos[0], min, pos[2]);
+                }//Fin if_else
+            }//Fin if
+            break;
+        case OIS::KC_DOWN:
+            if(!_op){
+                if((pos[1] - 1) > 0.09){
+                    _sel += 1;
+                    p->setPosition(pos[0], (pos[1] - 1), pos[2]);
+                } else {
+                    _sel = 0;
+                    p->setPosition(pos[0], max, pos[2]);
+                }//Fin if_else
+            }//Fin if
+            break;
+        case OIS::KC_SPACE:
+           changeState(PlayState::getSingletonPtr());
+          /*  if(!_inOption){
+                menuActions();
+            }//Fin if*/
+            break;
+        case OIS::KC_ESCAPE:
+          
+        default:
+            /* Cualquier otra tecla no hace nada */
+            break;
+    }//Fin switch
   // Transición al siguiente estado.
   // Espacio --> PlayState
-  if (e.key == OIS::KC_SPACE or e.key == OIS::KC_RETURN) {
-    changeState(PlayState::getSingletonPtr());
-  }
 }
 
 void
