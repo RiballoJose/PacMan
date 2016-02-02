@@ -62,13 +62,13 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   Ogre::Viewport* _viewport;
   Ogre::Camera* _camera;
 
-  int _filas, _columnas;
+  int _filas, _columnas, _currentDir, _prevDir;
   int** _levels;
   int _currentLevel;
   int _perspective;
-  int _pacSpeed;
+  double _pacSpeed;
   int _nwalls;
-  double _startRow, _currentRow, _startCol, _currentCol;
+  double _startRow, _currentRow, _startCol, _currentCol, _prevRow, _prevCol;
 
   Ogre::Real _nSpeed, _bSpeed, _dSpeed, _btSpeed, _deltaT;
   bool _endGame, _endPGame, _leftPress, _rightPress, _upPress,

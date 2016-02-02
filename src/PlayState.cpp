@@ -9,6 +9,7 @@ PlayState::enter ()
   _root = Ogre::Root::getSingletonPtr();
   _currentLevel = 1;
   _pacSpeed = 3;
+  _currentDir = _prevDir = _prevCol = _prevRow = 0;
 		  
   _sceneMgr = _root->getSceneManager("SceneManager");
   _camera = _sceneMgr->getCamera("IntroCamera");
@@ -19,9 +20,8 @@ PlayState::enter ()
     ->createChildSceneNode("Walls", Ogre::Vector3(0, 0, 0));
   createScene();
 
-  _endPGame=_leftPress=_rightPress=_upPress=_downPress=_iniJuego= false;
-  _endGame=_endLevel=false;
-  _exitGame = false;
+  _endPGame=_iniJuego= false;
+  _endGame = _endLevel = _exitGame = false;
 }
 void
 PlayState::createScene()
@@ -37,21 +37,19 @@ PlayState::createScene()
   
   nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode("Escenario", Ogre::Vector3(0, 0, 0));
   ent = _sceneMgr->createEntity("Base.mesh");
-  //nodo->setScale(1.0,1.0,1.29);
   nodo->translate(-0.5,0.0,3.0);
   nodo->attachObject(ent);
 
   int aux = -13;
-  //_lifes.reserve(3);
   for(int i = 0; i < 3; i++){
     bloq << "Life_" << i;
     nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode((bloq.str()),Ogre::Vector3(aux, 0.5, 19.5));
     ent = _sceneMgr->createEntity("Nave.mesh");
-    nodo->setScale(0.5, 0.5, 0.5);
+    nodo->setScale(0.075, 0.5, 0.375);
     nodo->attachObject(ent);
     _lifes.push_back(nodo);
 
-    aux += 2; bloq.str("");
+    aux += 1; bloq.str("");
   }
   aux = -14;
   _wallRows = new std::vector<int>();
@@ -98,7 +96,7 @@ PlayState::createScene()
 	  bloq << "Start(" << f << "," << c << ")";
 	  _pacman = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-(_currentLevel-1)*31))-12)));
 	  ent = _sceneMgr->createEntity(bloq.str(), "Nave.mesh");
-	  _pacman->setScale(0.1, 0.5, 0.5);
+	  _pacman->setScale(0.15, 0.5, 0.75);
 	  _pacman->translate(0.5,0,0.0);
 	  _pacman->attachObject(ent);
 	  _startRow = f-_pacman->getPosition().z;
@@ -140,6 +138,7 @@ PlayState::createScene()
   light->setSpotlightFalloff(5.0f);
   light->setCastShadows(true);
 }
+
 void
 PlayState::exit ()
 {
@@ -160,6 +159,7 @@ PlayState::pause()
 void
 PlayState::resume()
 {
+  _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 0.0));
 }
 
 bool
@@ -169,14 +169,23 @@ PlayState::frameStarted
   _move.x = 0; _move.y = 0; _move.z = 0;
   _deltaT = evt.timeSinceLastFrame;
   if(!_endGame || !_endLevel){
-    if(_rightPress and !colisionMap(0)){_move.x = 1;}
-    else if(_leftPress and !colisionMap(1)){_move.x = -1;}
-    else if(_upPress and !colisionMap(2)){_move.z = -1;}
-    else if(_downPress and !colisionMap(3)){_move.z = 1;}
+    /*if(_perspective==2){
+      _camera->setPosition(_pacman->getPosition()+Ogre::Vector3(0,0,0));
+      switch(_currentDir){
+      case 1:_camera->lookAt(Ogre::Vector3(200,0,0));break;
+      case 2:_camera->lookAt(Ogre::Vector3(-200,0,0));break;
+      case 3:_camera->lookAt(Ogre::Vector3(0,0,-200));break;
+      case 4:_camera->lookAt(Ogre::Vector3(0,0,200));break;
+      }
+      }*/
+    if(_currentDir == 1 and !colisionMap(0)){_move.x = 1;}
+    else if(_currentDir == 2 and !colisionMap(1)){_move.x = -1;}
+    else if(_currentDir == 3 and !colisionMap(2)){_move.z = -1;}
+    else if(_currentDir == 4 and !colisionMap(3)){_move.z = 1;}
     _pacman->translate(_move*_deltaT*_pacSpeed);
     _currentRow = (int)(_pacman->getPosition().z+_startRow+0.5);
     _currentCol = (int)(_pacman->getPosition().x+_startCol);
-    std::cout << _currentRow << "," << _currentCol << '\n';
+    if(_pacSpeed>3){_pacSpeed-=0.001;}
     if (_levels[(int)_currentRow][(int)_currentCol]==2){
       Ogre::SceneNode* nodo = NULL;
       std::stringstream bloq;
@@ -193,7 +202,10 @@ PlayState::frameStarted
       nodo = _sceneMgr->getSceneNode(bloq.str());
       Ogre::AxisAlignedBox bboxPac = _pacman->_getWorldAABB();
       Ogre::AxisAlignedBox bboxDot = nodo->_getWorldAABB();
-      if(bboxPac.intersects(bboxDot)){nodo->setVisible(false);}
+      if(bboxPac.intersects(bboxDot)){//habria que cambiar fantasmas y poder comer
+	nodo->setVisible(false);
+	_pacSpeed = 5;
+      }
     }
     else if (_levels[(int)_currentRow][(int)_currentCol]==6){
       Ogre::SceneNode* nodo = NULL;
@@ -230,18 +242,32 @@ PlayState::colisionMap(int dir)
     if(bboxPac.intersects(bboxWall)){
       switch(dir){
       case 0:
-	if(_currentCol < _wallCols->at(i)){hit = true;}
+	if(_currentCol < _wallCols->at(i)){
+	  hit = true;
+	  _pacman->translate(-0.075, 0.0, 0.0);
+	}
 	break;
       case 1:
-	if(_currentCol > _wallCols->at(i)){hit = true;}
+	if(_currentCol > _wallCols->at(i)){
+	  hit = true;
+	  _pacman->translate(0.075, 0.0, 0.0);
+	}
 	break;
       case 2:
-	if(_currentRow > _wallRows->at(i)){hit = true;}
+	if(_currentRow > _wallRows->at(i)){
+	  hit = true;
+	  _pacman->translate(0.0, 0.0, 0.075);
+	}
 	break;
       case 3:
-	if(_currentRow < _wallRows->at(i)){hit = true;}
+	if(_currentRow < _wallRows->at(i)){
+	  hit = true;
+	  _pacman->translate(0.0, 0.0, -0.075);
+	}
 	break;
       }
+      _currentDir = _prevDir;
+      //_prevDir = 0;_currentDir = 0;
     }
   }
   return hit;
@@ -253,7 +279,9 @@ PlayState::frameEnded
 {
   if (_exitGame)
     return false;
-  
+
+  if(_currentRow != _prevRow){_prevRow = _currentRow;_prevDir = 0;}
+  if(_currentCol != _prevCol){_prevCol = _currentCol;_prevDir = 0;}
   return true;
 }
 
@@ -262,8 +290,10 @@ PlayState::keyPressed
 (const OIS::KeyEvent &e)
 {
   switch(e.key){
+  case OIS::KC_SPACE:
+    break;
   case OIS::KC_P:
-      //pushState(PauseState::getSingletonPtr());
+      pushState(PauseState::getSingletonPtr());
     break;
   case OIS::KC_C:
       _perspective = (_perspective+1) % 2;
@@ -278,31 +308,27 @@ PlayState::keyPressed
 	_camera->setPosition(Ogre::Vector3(0, 32, 37));
 	_camera->lookAt(Ogre::Vector3(0, 0, 0));
 	break;
+      case 2:
+	_camera->setPosition(_pacman->getPosition());
+	_camera->lookAt(Ogre::Vector3(0, 0, 0));
+	break;
       }
       break;
   case OIS::KC_RIGHT:
-    _leftPress = false;
-    _upPress = false;
-    _downPress = false;
-    _rightPress = true;
-      break;
+    _prevDir = _currentDir;
+    _currentDir = 1;
+    break;
   case OIS::KC_LEFT:
-    _rightPress = false;
-    _upPress = false;
-    _downPress = false;
-    _leftPress = true;
+    _prevDir = _currentDir;
+    _currentDir = 2;
     break;
   case OIS::KC_UP:
-    _downPress = false;
-    _rightPress = false;
-    _leftPress = false;
-    _upPress = true;
+    _prevDir = _currentDir;
+    _currentDir = 3;
     break;
   case OIS::KC_DOWN:
-    _rightPress = false;
-    _upPress = false;
-    _leftPress = false;
-    _downPress = true;
+    _prevDir = _currentDir;
+    _currentDir = 4;
     break;
   default:
     break;
@@ -317,18 +343,6 @@ PlayState::keyReleased
   case OIS::KC_ESCAPE:
     _exitGame = true;
     break;
-    /*case OIS::KC_RIGHT:
-    _rightPress = false;
-    break;
-  case OIS::KC_LEFT:
-    _leftPress = false;
-    break;
-  case OIS::KC_UP:
-    _upPress = false;
-    break;
-  case OIS::KC_DOWN:
-    _downPress = false;
-    break;*/
   default:
     break;
   }
