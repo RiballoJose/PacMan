@@ -77,16 +77,22 @@ MenuState::createScene()
         _opciones[i] = nodoAux;
         nombre_act.str("");
     }//Fin for
+
+    nodoAux = _sceneMgr->getRootSceneNode()->createChildSceneNode(
+        "Titulo", Ogre::Vector3(6, 4.5  , 0));
+    ent = _sceneMgr->createEntity("Titulo.mesh");
+    nodoAux->attachObject(ent);
+
   /* Puntero */
-    nodoAux = _nodo->createChildSceneNode("Pointer", 
-        Ogre::Vector3(-1, 3.1, 0));
-    ent = _sceneMgr->createEntity("Pointer.mesh");
+    nodoAux = _nodo->createChildSceneNode("Puntero", 
+        Ogre::Vector3(-0.6, 3.2, 0));
+    ent = _sceneMgr->createEntity("Puntero.mesh");
     nodoAux->attachObject(ent);
     
     /*Background*/ 
     nodoAux = _sceneMgr->getRootSceneNode()->createChildSceneNode("BMenu", 
         Ogre::Vector3(-0.5, 0, -9));
-    ent = _sceneMgr->createEntity("Escenario.mesh");
+    ent = _sceneMgr->createEntity("Backmenu.mesh");
     nodoAux->pitch(Ogre::Degree(90));
     nodoAux->attachObject(ent);
     
@@ -94,7 +100,7 @@ MenuState::createScene()
     /* Iluminacion */
     Ogre::Light *light = _sceneMgr->createLight("Light");
     light->setType(Ogre::Light::LT_POINT);
-    light->setPosition(0, 5, 5);
+    light->setPosition(0, 4, 5);
     light->setSpecularColour(0.9, 0.9, 0.9); 
     light->setDiffuseColour(0.9, 0.9, 0.9);
 }//Fin createScene
