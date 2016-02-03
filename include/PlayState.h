@@ -67,7 +67,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   Ogre::Light* _light;
 
   int** _levels;
-  int _filas, _columnas, _currentDir, _nextDir, _prevDir,
+  int _hits, _filas, _columnas, _currentDir, _nextDir, _prevDir,
     _currentLevel, _perspective, _nwalls, _nPacDots, _score;
   double _pacSpeed, _blinkySpeed, _startRow, _currentRow, _startCol,
     _currentCol, _prevRow, _prevCol;

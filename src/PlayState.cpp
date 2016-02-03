@@ -401,8 +401,9 @@ PlayState::colisionMap(int dir, Ogre::SceneNode* node)
 	break;
       }
       hit = true;
-      _currentDir = _prevDir;
-      //_prevDir = 0;_currentDir = 0;
+      _hits++;
+      if(_hits>1){_currentDir=0;_prevDir=0;}
+      else{_currentDir = _prevDir;}
     }
   }
   return hit;
@@ -415,8 +416,8 @@ PlayState::frameEnded
   if (_exitGame)
     return false;
 
-  if(_currentRow != _prevRow){_prevRow = _currentRow;_prevDir = 0;}
-  if(_currentCol != _prevCol){_prevCol = _currentCol;_prevDir = 0;}
+  if(_currentRow != _prevRow){_hits = 0;_prevRow = _currentRow;_prevDir = 0;}
+  if(_currentCol != _prevCol){_hits = 0;_prevCol = _currentCol;_prevDir = 0;}
   return true;
 }
 
