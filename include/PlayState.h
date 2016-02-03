@@ -23,6 +23,8 @@
 
 #include <Ogre.h>
 #include <OIS/OIS.h>
+#include <OgreOverlay.h>
+#include <cstdlib>
 
 #include "GameState.h"
 
@@ -51,29 +53,33 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   static PlayState* getSingletonPtr ();
 
   void LoadLevels();
+  void nextLevel();
+  void removeLevel();
   void createScene();
-  bool colisionMap(int dir);
+  void pacmanMove();
+  void ghostMove();
+  bool colisionMap(int dir, Ogre::SceneNode* node);
   void destroyAllAttachedMovableObjects(Ogre::SceneNode* node);
   void removeScene();
+  void createOverlay();
 
  protected:
   Ogre::Root* _root;
   Ogre::SceneManager* _sceneMgr;
   Ogre::Viewport* _viewport;
   Ogre::Camera* _camera;
+  Ogre::Light* _light;
 
-  int _filas, _columnas, _currentDir, _prevDir;
   int** _levels;
-  int _currentLevel;
-  int _perspective;
-  double _pacSpeed;
-  int _nwalls;
-  double _startRow, _currentRow, _startCol, _currentCol, _prevRow, _prevCol;
+  int _filas, _columnas, _currentDir, _nextDir, _prevDir,
+    _currentLevel, _perspective, _nwalls, _nPacDots, _score;
+  double _pacSpeed, _blinkySpeed, _startRow, _currentRow, _startCol,
+    _currentCol, _prevRow, _prevCol;
+  bool _exitGame,  _endLevel, _pacmanDef, _isblinkyMoving;
 
-  Ogre::Real _nSpeed, _bSpeed, _dSpeed, _btSpeed, _deltaT;
-  bool _endGame, _endPGame, _leftPress, _rightPress, _upPress,
-    _downPress, _iniJuego, _endLevel;
-  Ogre::Vector3 _move;
+  Ogre::Real _deltaT;
+  Ogre::Vector3 _pacMove;
+  Ogre::Vector3 _blinkyMove;
   
   std::vector<Ogre::SceneNode*> _lifes;
   Ogre::SceneNode* _pacman;
@@ -81,11 +87,13 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   Ogre::SceneNode* _pinky;//rosa
   Ogre::SceneNode* _inky;//azul cian
   Ogre::SceneNode* _clyde;//naranja
-  Ogre::SceneNode* _blqEstructura;
   std::vector<int>* _wallRows;
   std::vector<int>* _wallCols;
+
+  Ogre::OverlayManager* _overlayManager;
+  Ogre::Overlay *_ovPlay;
+  Ogre::OverlayElement *_o_score;
   
-  bool _exitGame;
 };
 
 #endif

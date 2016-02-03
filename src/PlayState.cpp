@@ -7,21 +7,30 @@ void
 PlayState::enter ()
 {
   _root = Ogre::Root::getSingletonPtr();
-  _currentLevel = 1;
+  
+  _currentLevel = 2;
   _pacSpeed = 3;
-  _currentDir = _prevDir = _prevCol = _prevRow = 0;
-		  
+  _blinkySpeed = 2;
+  _currentDir = _nextDir = _prevDir = _prevCol = _prevRow = 0;
+  _nPacDots = _score = 0;
   _sceneMgr = _root->getSceneManager("SceneManager");
   _camera = _sceneMgr->getCamera("IntroCamera");
   _viewport = _root->getAutoCreatedWindow()->addViewport(_camera);
+  _light = _sceneMgr->createLight("Light");
 
   LoadLevels();
-  _blqEstructura = _sceneMgr->getRootSceneNode()
-    ->createChildSceneNode("Walls", Ogre::Vector3(0, 0, 0));
   createScene();
+  createOverlay();
 
-  _endPGame=_iniJuego= false;
-  _endGame = _endLevel = _exitGame = false;
+  _endLevel = _exitGame = false;
+}
+void 
+PlayState::createOverlay()
+{
+  /*_overlayManager = Ogre::OverlayManager::getSingletonPtr();
+    _ovPlay = _overlayManager->getByName("Play");
+    _o_score = _overlayManager->getOverlayElement("PlayText");
+    _ovPlay->show();*/
 }
 void
 PlayState::createScene()
@@ -30,6 +39,8 @@ PlayState::createScene()
   Ogre::SceneNode* nodo = NULL;
   std::stringstream bloq, material;
   bloq.str("");
+  _pacmanDef = false;
+  _isblinkyMoving = false;
   //Vista aerea
   _perspective = 0;
   _camera->setPosition(Ogre::Vector3(0, 42, 7));
@@ -54,8 +65,9 @@ PlayState::createScene()
   aux = -14;
   _wallRows = new std::vector<int>();
   _wallCols = new std::vector<int>();
+  int nGhost = 0;
   
-  for(int f = (_currentLevel-1)*(31); f < (_currentLevel-1)*(31)+31; f++){
+  for(int f = _currentLevel*(31); f < _currentLevel*(31)+31; f++){
     for(int c = 0; c < _columnas; c++){
       bloq.str("");
       switch(_levels[f][c]){
@@ -64,7 +76,7 @@ PlayState::createScene()
 	break;
       case 1://muros
 	bloq << "Wall(" << f << "," << c << ")";
-	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-(_currentLevel-1)*31))-12)));
+	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	ent = _sceneMgr->createEntity(bloq.str(), "Muro.mesh");
 	//ent->setMaterialName(material.str());
 	nodo->setScale(0.5, 0.5, 0.5);
@@ -74,27 +86,64 @@ PlayState::createScene()
 	break;
       case 2://Pac-dots segun wikipedia es la comida
 	bloq << "Pac-dot(" << f << "," << c << ")";
-	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-(_currentLevel-1)*31))-12)));
+	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
 	//ent->setMaterialName(material.str());
 	nodo->setScale(0.5, 0.5, 0.5);
 	nodo->attachObject(ent);
+	_nPacDots++;
 	break;
       case 3://comefantasmas
 	bloq << "Power-Pellet(" << f << "," << c << ")";
-	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-(_currentLevel-1)*31))-12)));
+	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
 	//ent->setMaterialName(material.str());
 	nodo->setScale(1.0, 1.0, 1.0);
 	nodo->attachObject(ent);
 	break;
       case 4://zona de fantasmas
-	bloq << "Home(" << f << "," << c << ")";
+	switch(nGhost){
+	case 1://rojo
+	  bloq << "Ghost(" << f << "," << c << ")";
+	  _blinky = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+	  ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
+	  //ent->setMaterialName(material.str());
+	  _blinky->setScale(1.0, 1.0, 1.0);
+	  _blinky->attachObject(ent);
+	  break;
+	case 4://rosa
+	  bloq << "Ghost(" << f << "," << c << ")";
+	  _pinky = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+	  ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
+	  //ent->setMaterialName(material.str());
+	  _pinky->setScale(1.0, 1.0, 1.0);
+	  _pinky->attachObject(ent);
+	  break;
+	case 13://azul
+	  bloq << "Ghost(" << f << "," << c << ")";
+	  _inky = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+	  ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
+	  //ent->setMaterialName(material.str());
+	  _inky->setScale(1.0, 1.0, 1.0);
+	  _inky->attachObject(ent);
+	  break;
+	case 16://naranja
+	  bloq << "Ghost(" << f << "," << c << ")";
+	  _clyde = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+	  ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
+	  //ent->setMaterialName(material.str());
+	  _clyde->setScale(1.0, 1.0, 1.0);
+	  _clyde->attachObject(ent);
+	  break;
+	default:
+	  break;
+	}
+	nGhost++;
 	break;
       case 5://donde empieza el pacman->cuidado:tenemos dos 5s
-	if(!_pacman){
+	if(!_pacmanDef){
 	  bloq << "Start(" << f << "," << c << ")";
-	  _pacman = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-(_currentLevel-1)*31))-12)));
+	  _pacman = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  ent = _sceneMgr->createEntity(bloq.str(), "Nave.mesh");
 	  _pacman->setScale(0.15, 0.5, 0.75);
 	  _pacman->translate(0.5,0,0.0);
@@ -103,11 +152,12 @@ PlayState::createScene()
 	  _startCol = (c-_pacman->getPosition().x)+1;
 	  _currentRow = _startRow;
 	  _currentCol = _startCol;
+	  _pacmanDef = true;
 	}
 	break;
       case 6:
 	bloq << "Transporter(" << f << "," << c << ")";
-	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-(_currentLevel-1)*31))-12)));
+	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	ent = _sceneMgr->createEntity(bloq.str(), "Muro.mesh");
 	//ent->setMaterialName(material.str());
 	nodo->setScale(0.2, 0.2, 0.2);
@@ -126,17 +176,16 @@ PlayState::createScene()
   _sceneMgr->setAmbientLight(Ogre::ColourValue(0.9, 0.9, 0.9));
   _sceneMgr->setShadowTextureCount(2);
   _sceneMgr->setShadowTextureSize(512);
-
-  Ogre::Light *light = _sceneMgr->createLight("Light");
-  light->setType(Ogre::Light::LT_SPOTLIGHT);
-  light->setDirection(Ogre::Vector3(0,-1,0));
-  light->setSpotlightInnerAngle(Ogre::Degree(25.0f));
-  light->setSpotlightOuterAngle(Ogre::Degree(200.0f));
-  light->setPosition(0, 150, 0);
-  light->setSpecularColour(1, 1, 1);
-  light->setDiffuseColour(1, 1, 1);
-  light->setSpotlightFalloff(5.0f);
-  light->setCastShadows(true);
+  
+  _light->setType(Ogre::Light::LT_SPOTLIGHT);
+  _light->setDirection(Ogre::Vector3(0,-1,0));
+  _light->setSpotlightInnerAngle(Ogre::Degree(25.0f));
+  _light->setSpotlightOuterAngle(Ogre::Degree(200.0f));
+  _light->setPosition(0, 150, 0);
+  _light->setSpecularColour(1, 1, 1);
+  _light->setDiffuseColour(1, 1, 1);
+  _light->setSpotlightFalloff(5.0f);
+  _light->setCastShadows(true);
 }
 
 void
@@ -160,15 +209,16 @@ void
 PlayState::resume()
 {
   _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 0.0));
+  if(_exitGame){popState();/*changeState(MenuState::getSingletonPtr())*/};
 }
 
 bool
 PlayState::frameStarted
 (const Ogre::FrameEvent& evt)
 {
-  _move.x = 0; _move.y = 0; _move.z = 0;
+  _pacMove.x = 0; _pacMove.y = 0; _pacMove.z = 0;
   _deltaT = evt.timeSinceLastFrame;
-  if(!_endGame || !_endLevel){
+  if(!_exitGame and !_endLevel){
     /*if(_perspective==2){
       _camera->setPosition(_pacman->getPosition()+Ogre::Vector3(0,0,0));
       switch(_currentDir){
@@ -178,58 +228,144 @@ PlayState::frameStarted
       case 4:_camera->lookAt(Ogre::Vector3(0,0,200));break;
       }
       }*/
-    if(_currentDir == 1 and !colisionMap(0)){_move.x = 1;}
-    else if(_currentDir == 2 and !colisionMap(1)){_move.x = -1;}
-    else if(_currentDir == 3 and !colisionMap(2)){_move.z = -1;}
-    else if(_currentDir == 4 and !colisionMap(3)){_move.z = 1;}
-    _pacman->translate(_move*_deltaT*_pacSpeed);
-    _currentRow = (int)(_pacman->getPosition().z+_startRow+0.5);
-    _currentCol = (int)(_pacman->getPosition().x+_startCol);
-    if(_pacSpeed>3){_pacSpeed-=0.001;}
-    if (_levels[(int)_currentRow][(int)_currentCol]==2){
-      Ogre::SceneNode* nodo = NULL;
-      std::stringstream bloq;
-      bloq << "Pac-dot(" << (int)_currentRow << "," << (int)_currentCol << ")";
-      nodo = _sceneMgr->getSceneNode(bloq.str());
-      Ogre::AxisAlignedBox bboxPac = _pacman->_getWorldAABB();
-      Ogre::AxisAlignedBox bboxDot = nodo->_getWorldAABB();
-      if(bboxPac.intersects(bboxDot)){nodo->setVisible(false);}
-    }
-    else if (_levels[(int)_currentRow][(int)_currentCol]==3){
-      Ogre::SceneNode* nodo = NULL;
-      std::stringstream bloq;
-      bloq << "Power-Pellet(" << (int)_currentRow << "," << (int)_currentCol << ")";
-      nodo = _sceneMgr->getSceneNode(bloq.str());
-      Ogre::AxisAlignedBox bboxPac = _pacman->_getWorldAABB();
-      Ogre::AxisAlignedBox bboxDot = nodo->_getWorldAABB();
-      if(bboxPac.intersects(bboxDot)){//habria que cambiar fantasmas y poder comer
-	nodo->setVisible(false);
-	_pacSpeed = 5;
-      }
-    }
-    else if (_levels[(int)_currentRow][(int)_currentCol]==6){
-      Ogre::SceneNode* nodo = NULL;
-      std::stringstream bloq;
-      bloq << "Transporter(" << (int)_currentRow << "," << (int)_currentCol << ")";
-      nodo = _sceneMgr->getSceneNode(bloq.str());
-      Ogre::AxisAlignedBox bboxPac = _pacman->_getWorldAABB();
-      Ogre::AxisAlignedBox bboxDot = nodo->_getWorldAABB();
-      if(bboxPac.intersects(bboxDot)){
-	if((int)_currentCol > 25){_pacman->translate(-26,0,0);}
-	else if((int)_currentCol<4){_pacman->translate(26,0,0);}
-	else if((int)_currentRow<(_currentLevel-1)*31+4){_pacman->translate(0,0,29);}
-	else{_pacman->translate(0,0,-29);}
-      }
-    }
+    pacmanMove();
+    ghostMove();
+  }
+  else{//nivel terminado
+    nextLevel();
   }
   return true;
 }
 
+void
+PlayState::pacmanMove()
+{
+  if(_currentDir == 1 and !colisionMap(0, _pacman)){_pacMove.x = 1;}
+  else if(_currentDir == 2 and !colisionMap(1, _pacman)){_pacMove.x = -1;}
+  else if(_currentDir == 3 and !colisionMap(2, _pacman)){_pacMove.z = -1;}
+  else if(_currentDir == 4 and !colisionMap(3, _pacman)){_pacMove.z = 1;}
+  _pacman->translate(_pacMove*_deltaT*_pacSpeed);
+  _currentRow = (int)(_pacman->getPosition().z+_startRow+0.5);
+  _currentCol = (int)(_pacman->getPosition().x+_startCol);
+  if(_pacSpeed>3){_pacSpeed-=0.001;}
+  if (_levels[(int)_currentRow][(int)_currentCol]==2){
+    Ogre::SceneNode* nodo = NULL;
+    std::stringstream bloq;
+    bloq << "Pac-dot(" << (int)_currentRow << "," << (int)_currentCol << ")";
+    try{nodo = _sceneMgr->getSceneNode(bloq.str());}catch(...){}
+    if(nodo){
+      Ogre::AxisAlignedBox bboxPac = _pacman->_getWorldAABB();
+      Ogre::AxisAlignedBox bboxDot = nodo->_getWorldAABB();
+      if(bboxPac.intersects(bboxDot)){
+	nodo->removeAndDestroyAllChildren();//setVisible(false);
+	_sceneMgr->destroySceneNode(nodo);
+	_nPacDots--;
+	_score += 10;
+      }
+      std::cout << _score << '\n';
+      if(_nPacDots<1){_endLevel = true;}
+    }
+  }
+  else if (_levels[(int)_currentRow][(int)_currentCol]==3){
+    Ogre::SceneNode* nodo = NULL;
+    std::stringstream bloq;
+    bloq << "Power-Pellet(" << (int)_currentRow << "," << (int)_currentCol << ")";
+    try{nodo = _sceneMgr->getSceneNode(bloq.str());}catch(...){}
+    if(nodo){
+      Ogre::AxisAlignedBox bboxPac = _pacman->_getWorldAABB();
+      Ogre::AxisAlignedBox bboxDot = nodo->_getWorldAABB();
+      if(bboxPac.intersects(bboxDot)){//habria que cambiar fantasmas y poder comer
+	nodo->removeAndDestroyAllChildren();
+	_sceneMgr->destroySceneNode(nodo);
+	_pacSpeed = 4;
+      }
+    }
+  }
+  else if (_levels[(int)_currentRow][(int)_currentCol]==6){
+    Ogre::SceneNode* nodo = NULL;
+    std::stringstream bloq;
+    bloq << "Transporter(" << (int)_currentRow << "," << (int)_currentCol << ")";
+    nodo = _sceneMgr->getSceneNode(bloq.str());
+    Ogre::AxisAlignedBox bboxPac = _pacman->_getWorldAABB();
+    Ogre::AxisAlignedBox bboxDot = nodo->_getWorldAABB();
+    if(bboxPac.intersects(bboxDot)){
+      if((int)_currentCol > 25){_pacman->translate(-26,0,0);}
+      else if((int)_currentCol<4){_pacman->translate(26,0,0);}
+      else if((int)_currentRow<(_currentLevel-1)*31+4){_pacman->translate(0,0,29);}
+      else{_pacman->translate(0,0,-29);}
+    }
+  }
+}
+
+void
+PlayState::ghostMove()//grafos...
+{
+  /*int togo = rand()%4;
+  if (colisionMap(-1, _blinky)){
+    _blinkyMove.x = 0;_blinkyMove.z = 0;
+    if(togo == 0 and !colisionMap(0, _blinky)){_blinkyMove.x = 1;}
+    else if(togo == 1 and !colisionMap(1, _blinky)){_blinkyMove.x = -1;}
+    else if(togo == 3 and !colisionMap(2, _blinky)){_blinkyMove.z = -1;}
+    else if(togo == 4 and !colisionMap(3, _blinky)){_blinkyMove.z = 1;}
+  }
+  else if(!_isblinkyMoving){
+    switch(togo){
+    case 0: _blinkyMove.x = 1; _blinkyMove.z = 0; break;
+    case 1: _blinkyMove.x = -1;_blinkyMove.z = 0; break;
+    case 2: _blinkyMove.z = -1;_blinkyMove.x = 0; break;
+    case 3: _blinkyMove.z = 1; _blinkyMove.x = 0; break;
+    }
+    _isblinkyMoving = true;
+  }
+  _blinky->translate(_blinkyMove*_deltaT*_blinkySpeed);*/
+  //_currentRow = (int)(_pacman->getPosition().z+_startRow+0.5);
+  //_currentCol = (int)(_pacman->getPosition().x+_startCol);
+}
+
+void
+PlayState::nextLevel()
+{
+  _currentLevel = (_currentLevel+1);
+  if(_currentLevel>3){_exitGame = true;}
+  else{removeLevel();createScene();}
+}
+void
+PlayState::removeLevel()
+{
+  _pacman->removeAndDestroyAllChildren();
+  _blinky->removeAndDestroyAllChildren();
+  _pinky->removeAndDestroyAllChildren();
+  _inky->removeAndDestroyAllChildren();
+  _clyde->removeAndDestroyAllChildren();
+  destroyAllAttachedMovableObjects(_sceneMgr->getRootSceneNode());
+  _sceneMgr->getRootSceneNode()->removeAndDestroyAllChildren();
+  _score = 0;
+  _endLevel = false;
+}
+void
+PlayState::destroyAllAttachedMovableObjects(Ogre::SceneNode* node)
+{
+   if(!node) return;
+
+   Ogre::SceneNode::ObjectIterator itObject = node->getAttachedObjectIterator();
+
+   while (itObject.hasMoreElements()){
+      node->getCreator()->destroyMovableObject(itObject.getNext());
+   }//Fin while
+
+   Ogre::SceneNode::ChildNodeIterator itChild = node->getChildIterator();
+
+   while (itChild.hasMoreElements()){
+      Ogre::SceneNode* pChildNode = static_cast<Ogre::SceneNode*>(itChild.getNext());
+      destroyAllAttachedMovableObjects(pChildNode);
+   }
+}
+
 bool
-PlayState::colisionMap(int dir)
+PlayState::colisionMap(int dir, Ogre::SceneNode* node)
 {
   
-  Ogre::AxisAlignedBox bboxPac = _pacman->_getWorldAABB();
+  Ogre::AxisAlignedBox bboxPac = node->_getWorldAABB();
   Ogre::AxisAlignedBox bboxWall;
   Ogre::SceneNode* aux;
   std::stringstream wall;
@@ -243,29 +379,26 @@ PlayState::colisionMap(int dir)
       switch(dir){
       case 0:
 	if(_currentCol < _wallCols->at(i)){
-	  hit = true;
-	  _pacman->translate(-0.075, 0.0, 0.0);
+	  node->translate(-0.075, 0.0, 0.0);
 	}
 	break;
       case 1:
 	if(_currentCol > _wallCols->at(i)){
-	  hit = true;
-	  _pacman->translate(0.075, 0.0, 0.0);
+	  node->translate(0.075, 0.0, 0.0);
 	}
 	break;
       case 2:
 	if(_currentRow > _wallRows->at(i)){
-	  hit = true;
-	  _pacman->translate(0.0, 0.0, 0.075);
+	  node->translate(0.0, 0.0, 0.075);
 	}
 	break;
       case 3:
 	if(_currentRow < _wallRows->at(i)){
-	  hit = true;
-	  _pacman->translate(0.0, 0.0, -0.075);
+	  node->translate(0.0, 0.0, -0.075);
 	}
 	break;
       }
+      hit = true;
       _currentDir = _prevDir;
       //_prevDir = 0;_currentDir = 0;
     }
@@ -291,9 +424,11 @@ PlayState::keyPressed
 {
   switch(e.key){
   case OIS::KC_SPACE:
+    pushState(PauseState::getSingletonPtr());
+    break;
+  case OIS::KC_ESCAPE://overlay?
     break;
   case OIS::KC_P:
-      pushState(PauseState::getSingletonPtr());
     break;
   case OIS::KC_C:
       _perspective = (_perspective+1) % 2;
@@ -317,18 +452,22 @@ PlayState::keyPressed
   case OIS::KC_RIGHT:
     _prevDir = _currentDir;
     _currentDir = 1;
+    _nextDir = 1;
     break;
   case OIS::KC_LEFT:
     _prevDir = _currentDir;
     _currentDir = 2;
+    _nextDir = 2;
     break;
   case OIS::KC_UP:
     _prevDir = _currentDir;
     _currentDir = 3;
+    _nextDir = 3;
     break;
   case OIS::KC_DOWN:
     _prevDir = _currentDir;
     _currentDir = 4;
+    _nextDir = 4;
     break;
   default:
     break;
