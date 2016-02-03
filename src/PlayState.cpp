@@ -8,9 +8,9 @@ PlayState::enter ()
 {
   _root = Ogre::Root::getSingletonPtr();
   
-  _currentLevel = 2;
+  _currentLevel = 1;
   _pacSpeed = 3;
-  _blinkySpeed = 2;
+  _blinkySpeed = 2.5;
   _currentDir = _nextDir = _prevDir = _prevCol = _prevRow = 0;
   _nPacDots = _score = 0;
   _sceneMgr = _root->getSceneManager("SceneManager");
@@ -104,7 +104,7 @@ PlayState::createScene()
       case 4://zona de fantasmas
 	switch(nGhost){
 	case 1://rojo
-	  bloq << "Ghost(" << f << "," << c << ")";
+	  bloq << "Blinky";
 	  _blinky = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
 	  //ent->setMaterialName(material.str());
@@ -112,7 +112,7 @@ PlayState::createScene()
 	  _blinky->attachObject(ent);
 	  break;
 	case 4://rosa
-	  bloq << "Ghost(" << f << "," << c << ")";
+	  bloq << "Pinky";
 	  _pinky = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
 	  //ent->setMaterialName(material.str());
@@ -120,7 +120,7 @@ PlayState::createScene()
 	  _pinky->attachObject(ent);
 	  break;
 	case 13://azul
-	  bloq << "Ghost(" << f << "," << c << ")";
+	  bloq << "Inky";
 	  _inky = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
 	  //ent->setMaterialName(material.str());
@@ -128,7 +128,7 @@ PlayState::createScene()
 	  _inky->attachObject(ent);
 	  break;
 	case 16://naranja
-	  bloq << "Ghost(" << f << "," << c << ")";
+	  bloq << "Clyde";
 	  _clyde = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
 	  //ent->setMaterialName(material.str());
@@ -142,7 +142,7 @@ PlayState::createScene()
 	break;
       case 5://donde empieza el pacman->cuidado:tenemos dos 5s
 	if(!_pacmanDef){
-	  bloq << "Start(" << f << "," << c << ")";
+	  bloq << "Pacman";
 	  _pacman = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  ent = _sceneMgr->createEntity(bloq.str(), "Nave.mesh");
 	  _pacman->setScale(0.15, 0.5, 0.75);
@@ -257,9 +257,10 @@ PlayState::pacmanMove()
       Ogre::AxisAlignedBox bboxPac = _pacman->_getWorldAABB();
       Ogre::AxisAlignedBox bboxDot = nodo->_getWorldAABB();
       if(bboxPac.intersects(bboxDot)){
-	nodo->removeAndDestroyAllChildren();//setVisible(false);
+	nodo->removeAndDestroyAllChildren();
 	_sceneMgr->destroySceneNode(nodo);
 	_nPacDots--;
+	_blinkySpeed += 0.0025;//
 	_score += 10;
       }
       std::cout << _score << '\n';
@@ -316,10 +317,8 @@ PlayState::ghostMove()//grafos...
     case 3: _blinkyMove.z = 1; _blinkyMove.x = 0; break;
     }
     _isblinkyMoving = true;
-  }
+    }
   _blinky->translate(_blinkyMove*_deltaT*_blinkySpeed);*/
-  //_currentRow = (int)(_pacman->getPosition().z+_startRow+0.5);
-  //_currentCol = (int)(_pacman->getPosition().x+_startCol);
 }
 
 void
@@ -327,7 +326,10 @@ PlayState::nextLevel()
 {
   _currentLevel = (_currentLevel+1);
   if(_currentLevel>3){_exitGame = true;}
-  else{removeLevel();createScene();}
+  else{
+    removeLevel();createScene();
+    _currentDir=_prevDir=0;
+  }
 }
 void
 PlayState::removeLevel()
@@ -485,24 +487,6 @@ PlayState::keyReleased
   default:
     break;
   }
-}
-
-void
-PlayState::mouseMoved
-(const OIS::MouseEvent &e)
-{
-}
-
-void
-PlayState::mousePressed
-(const OIS::MouseEvent &e, OIS::MouseButtonID id)
-{
-}
-
-void
-PlayState::mouseReleased
-(const OIS::MouseEvent &e, OIS::MouseButtonID id)
-{
 }
 
 PlayState*
