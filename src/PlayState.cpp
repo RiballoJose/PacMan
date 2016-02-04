@@ -266,7 +266,6 @@ PlayState::pacmanMove()
 	_blinkySpeed += 0.0025;//
 	_score += 10;
       }
-      std::cout << _score << '\n';
       if(_nPacDots<1){_endLevel = true;}
     }
   }

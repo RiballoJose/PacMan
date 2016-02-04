@@ -26,6 +26,7 @@
 #include <OgreOverlay.h>
 #include <OgreOverlaySystem.h>
 #include <OgreOverlayManager.h>
+#include <OgreOverlayElement.h>
 #include <OgreOverlayContainer.h>
 #include <cstdlib>
 
