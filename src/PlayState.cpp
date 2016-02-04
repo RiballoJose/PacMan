@@ -12,6 +12,7 @@ PlayState::enter ()
   _currentLevel = 0;
   _pacSpeed = 3;
   _blinkySpeed = 2.5;
+  _blinkyDir = rand()%4;
   _currentDir = _nextDir = _prevDir = _prevCol = _prevRow = 0;
   _nPacDots = _score = 0;
   _camera = _sceneMgr->getCamera("IntroCamera");
@@ -122,12 +123,15 @@ PlayState::createScene()
 	  //ent->setMaterialName(material.str());
 	  _blinky->setScale(1.0, 1.0, 1.0);
 	  _blinky->attachObject(ent);
-	  _blinkyStart.first  = f-_blinky->getPosition().z;
-	  _blinkyStart.second = (c-_blinky->getPosition().x);
+	  _blinkyStart.first  = f;
+	  _blinkyStart.second = c;
+	  //std::cout << f << ", " << c << " igual a ";
+	  //std::cout << _blinky->getPosition().z << ", " << _blinky->getPosition().x << '\n';
+	  /*
 	  _blinkyPosC.first  = f-_blinky->getPosition().z;
 	  _blinkyPosC.second = (c-_blinky->getPosition().x);
 	  _blinkyPosP.first = _blinkyPosC.first;
-	  _blinkyPosP.second = _blinkyPosC.second;
+	  _blinkyPosP.second = _blinkyPosC.second;*/
 	  break;
 	case 4://rosa
 	  bloq << "Pinky";
@@ -182,6 +186,18 @@ PlayState::createScene()
 	nodo->setScale(0.2, 0.2, 0.2);
 	nodo->attachObject(ent);
 	nodo->setVisible(false);
+	break;
+      case 7://Ghost door
+	bloq << "Wall(" << f << "," << c << ")";
+	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+	ent = _sceneMgr->createEntity(bloq.str(), "Muro.mesh");
+	//ent->setMaterialName(material.str());
+	//ent->setTransparency(0.5f);
+	nodo->setScale(0.5, 0.5, 0.5);
+	nodo->attachObject(ent);
+	nodo->setVisible(false);
+	_wallRows->push_back(f);
+	_wallCols->push_back(c);
 	break;
       default:
 	break;
@@ -364,19 +380,37 @@ PlayState::pacmanMove()
 void
 PlayState::ghostMove()//grafos...
 {
-  /*if(_level->getVertex(f, (*it)->getData().getX()))!=NULL){
-    _blinkyPosP.first = _blinkyPosC.first;
-    _blinkyPosP.second = _blinkyPosC.second;
-  }
-  _blinkyPosC.first = _blinky->getPosition().x+_blinkyStart.first;
-  _blinkyPosC.second = _blinky->getPosition().z+_blinkyStart.second;
-  if((_blinkyPosC.first - (int)_blinkyPosC.first == 0)
-     and (_blinkyPosC.second - (int)_blinkyPosC.second == 0)){
-    _blinkyDir = rand()%4;
-    _blinkyMove.x = 0; _blinkyMove.z = 0;
+  std::vector<GraphVertex*>vertexes;
+  GraphVertex* vert;
+  _blinkyMove.x = 0; _blinkyMove.z = 0;
+  //std::cout << _blinkyStart.first+(int)_blinky->getPosition().z -2 << ", " << _blinkyStart.second+(int)_blinky->getPosition().x+2 << '\n';
+  if((vert = _level->getVertex(_blinkyStart.first+(int)_blinky->getPosition().z -2, _blinkyStart.second+(int)_blinky->getPosition().x+2))!=NULL){
+    
+    vertexes = _level->adjacents(vert->getData().getZ(), vert->getData().getX());
+    std::vector<GraphVertex*>::const_iterator it;
+    //_blinkyDir = rand()%4;
+    for (it = vertexes.begin();it != vertexes.end();++it){
+      if(((*it)->getData().getX() < _blinkyStart.second+(int)_blinky->getPosition().x +2 and
+			      (int)(*it)->getData().getZ() == _blinkyStart.first+(int)_blinky->getPosition().z -2)){//va a izq
+	_blinkyMove.x = -1; _blinkyMove.z = 0;
+      }
+      else if(((*it)->getData().getX() > _blinkyStart.second+(int)_blinky->getPosition().x +2 and
+				   (int)(*it)->getData().getZ() == _blinkyStart.first+(int)_blinky->getPosition().z -2)){
+	_blinkyMove.x = 1; _blinkyMove.z = 0;
+      }
+      else if(((*it)->getData().getZ() > _blinkyStart.first+(int)_blinky->getPosition().z -2 and
+				   (int)(*it)->getData().getX() == _blinkyStart.second+(int)_blinky->getPosition().x +2)){
+	_blinkyMove.x = 0; _blinkyMove.z = 1;
+      }
+      else if(((*it)->getData().getZ() < _blinkyStart.first+(int)_blinky->getPosition().z -2 and
+				   (int)(*it)->getData().getX() == _blinkyStart.second+(int)_blinky->getPosition().x +2)){
+	_blinkyMove.x = 0; _blinkyMove.z = -1;
+      }
+      //std::cout << (*it)->getData().getZ() << "," << (*it)->getData().getX() << '\n';
+    }
   }
   
-  switch(_blinkyDir){
+  /*switch(_blinkyDir){
   case 0:
     if(_levels[(int)_blinkyPosC.first+1][(int)_blinkyPosC.second]!=1){_blinkyMove.x=1;}
     else{_blinkyMove.x=0;}
@@ -411,8 +445,8 @@ PlayState::ghostMove()//grafos...
     case 3: _blinkyMove.z = 1; _blinkyMove.x = 0; break;
     }
     _isblinkyMoving = true;
-    }
-  _blinky->translate(_blinkyMove*_deltaT*_blinkySpeed);*/
+    }*/
+  _blinky->translate(_blinkyMove*_deltaT*_blinkySpeed);
 }
 
 void
