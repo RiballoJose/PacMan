@@ -167,8 +167,8 @@ PlayState::createScene()
 	  _level->addVertex(new GraphVertex(Node(f+c, f,c, bloq.str(), Ogre::Vector3(f, 0, c))));
 	  _level->addVertex(new GraphVertex(Node(f+c, f,c, bloq.str(), Ogre::Vector3(f, 0, c+1))));
 	  _pacman = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
-	  ent = _sceneMgr->createEntity(bloq.str(), "Nave.mesh");
-	  _pacman->setScale(0.15, 0.5, 0.75);
+	  ent = _sceneMgr->createEntity(bloq.str(), "Pacman.mesh");
+	  //_pacman->setScale(0.15, 0.5, 0.75);
 	  _pacman->translate(0.5,0,0.0);
 	  _pacman->attachObject(ent);
 	  _startRow = f-_pacman->getPosition().z;
