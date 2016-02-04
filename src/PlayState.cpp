@@ -196,14 +196,11 @@ PlayState::createScene()
 	   ((c < _columnas and _levels[f][c+1]!=1) and ((f > _currentLevel*(31) and _levels[f-1][c]!=1) or
 							(f < (_currentLevel+1)*(31) and _levels[f+1][c]!=1))) or
 	   ((f > _currentLevel*(31) and _levels[f-1][c]!=1) and ((c > 0 and _levels[f][c-1]!=1) or
-								     (c < _columnas and _levels[f][c+1]!=1))) or
+								 (c < _columnas and _levels[f][c+1]!=1))) or
 	   ((f < (_currentLevel+1)*(31) and _levels[f+1][c]!=1) and ((c > 0 and _levels[f][c-1]!=1) or
-									 (c < _columnas and _levels[f][c+1]!=1)))))){
-	/*(((c > 0 and _levels[f][c-1]!=1) or (c < _columnas and _levels[f][c+1]!=1)) and
-	  (f > _currentLevel*(31) and _levels[f-1][c]!=1) or (f < (_currentLevel+1)*(31) and _levels[f+1][c]!=1))){*/
-	std::cout << "Vertice " << bloq.str() << '\n';
+								     (c < _columnas and _levels[f][c+1]!=1)))))){
+	std::cout << ": Vertice " << bloq.str() << '\n';
 	_level->addVertex(new GraphVertex(Node(f+c,f,c, bloq.str(), Ogre::Vector3(f, 0, c))));
-	 /*{*/ 
       }
       aux+=1;
     }
@@ -235,23 +232,24 @@ PlayState::calculateAdjs(){
   bool wall = false;
   bool vertex = false;
   for (it = vertexes.begin(); it != vertexes.end(); ++it){
-    for(int f = (*it)->getData().getZ()+1; f < _currentLevel*(31) and !wall and ! vertex; f++){
-      if (_levels[f][(*it)->getData().getZ()]==1){wall = true;}
+    //std::cout << (*it)->getData().getZ() <<  "," << (*it)->getData().getX() << " enlaza con:" << '\n';
+    for(int f = (*it)->getData().getZ()+1; f < (_currentLevel+1)*31 and (!wall and ! vertex); f++){
+      if (_levels[f][(*it)->getData().getX()]==1){wall = true;}
       else if((aux = _level->getVertex(f, (*it)->getData().getX()))!=NULL){
 	vertex = true;
 	//_level->addEdge((*it), aux);
-	std::cout << (*it)->getData().getX() <<  "," << (*it)->getData().getZ() << " enlaca con ";
-	std::cout << aux->getData().getX() << "," <<  aux->getData().getZ() << '\n';
+	std::cout << (*it)->getData().getZ() <<  "," << (*it)->getData().getX() << " enlaza vertical con ";
+	std::cout << aux->getData().getZ() << "," <<  aux->getData().getX() << '\n';
       }
     }
     wall = vertex = false;
-    for(int c = (*it)->getData().getX()+1; c < _columnas and !wall and ! vertex; c++){
+    for(int c = (*it)->getData().getX()+1; c < _columnas and (!wall and ! vertex); c++){
       if (_levels[(*it)->getData().getZ()][c]==1){wall = true;}
-      else if((aux = _level->getVertex((*it)->getData().getX(), c))!=NULL){
+      else if((aux = _level->getVertex((*it)->getData().getZ(), c))!=NULL){
 	vertex = true;
 	//_level->addEdge((*it), aux);
-	std::cout << (*it)->getData().getX() <<  "," << (*it)->getData().getZ() << " enlaca con ";
-	std::cout << aux->getData().getX() << "," <<  aux->getData().getZ() << '\n';
+	std::cout << (*it)->getData().getZ() <<  "," << (*it)->getData().getX() << " enlaza horizontal con ";
+	std::cout << aux->getData().getZ() << "," <<  aux->getData().getX() << '\n';
       }
     }
     wall = vertex = false;
