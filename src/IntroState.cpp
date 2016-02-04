@@ -10,7 +10,7 @@ IntroState::enter ()
 
 
   _sceneMgr = _root->createSceneManager(Ogre::ST_GENERIC, "SceneManager");
-
+  
   _camera = _sceneMgr->createCamera("IntroCamera");
   _camera->setPosition(Ogre::Vector3(0, 0, 0));
   _camera->setNearClipDistance(5);
@@ -108,24 +108,6 @@ IntroState::keyReleased
   if (e.key == OIS::KC_ESCAPE) {
     _exitGame = true;
   }
-}
-
-void
-IntroState::mouseMoved
-(const OIS::MouseEvent &e)
-{
-}
-
-void
-IntroState::mousePressed
-(const OIS::MouseEvent &e, OIS::MouseButtonID id)
-{
-}
-
-void
-IntroState::mouseReleased
-(const OIS::MouseEvent &e, OIS::MouseButtonID id)
-{
 }
 
 IntroState*

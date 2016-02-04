@@ -201,25 +201,6 @@ MenuState::keyReleased
     _exitGame = true;
   }
 }
-
-void
-MenuState::mouseMoved
-(const OIS::MouseEvent &e)
-{
-}
-
-void
-MenuState::mousePressed
-(const OIS::MouseEvent &e, OIS::MouseButtonID id)
-{
-}
-
-void
-MenuState::mouseReleased
-(const OIS::MouseEvent &e, OIS::MouseButtonID id)
-{
-}
-
 MenuState*
 MenuState::getSingletonPtr ()
 {

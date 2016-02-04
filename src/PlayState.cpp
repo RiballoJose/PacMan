@@ -1,19 +1,19 @@
 #include "PlayState.h"
 #include "PauseState.h"
-
 template<> PlayState* Ogre::Singleton<PlayState>::msSingleton = 0;
+
+using namespace Ogre::OverlayElementCommands;
 
 void
 PlayState::enter ()
 {
   _root = Ogre::Root::getSingletonPtr();
-  
+  _sceneMgr = _root->getSceneManager("SceneManager");
   _currentLevel = 1;
   _pacSpeed = 3;
   _blinkySpeed = 2.5;
   _currentDir = _nextDir = _prevDir = _prevCol = _prevRow = 0;
   _nPacDots = _score = 0;
-  _sceneMgr = _root->getSceneManager("SceneManager");
   _camera = _sceneMgr->getCamera("IntroCamera");
   _viewport = _root->getAutoCreatedWindow()->addViewport(_camera);
   _light = _sceneMgr->createLight("Light");
@@ -27,10 +27,13 @@ PlayState::enter ()
 void 
 PlayState::createOverlay()
 {
-  /*_overlayManager = Ogre::OverlayManager::getSingletonPtr();
-    _ovPlay = _overlayManager->getByName("Play");
-    _o_score = _overlayManager->getOverlayElement("PlayText");
-    _ovPlay->show();*/
+  _sceneMgr->addRenderQueueListener(new Ogre::OverlaySystem());
+  _overlayManager = Ogre::OverlayManager::getSingletonPtr();
+  _ovPlay = _overlayManager->getByName("Info");
+  //_o_score = _overlayManager->getOverlayElement("PlayText");
+  std::cout <<"Overlay? " << _ovPlay << '\n';
+  if(_ovPlay)
+    _ovPlay->show();
 }
 void
 PlayState::createScene()

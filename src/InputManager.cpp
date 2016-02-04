@@ -4,8 +4,7 @@ template<> InputManager* Ogre::Singleton<InputManager>::msSingleton = 0;
 
 InputManager::InputManager ():
   _inputSystem(0),
-  _keyboard(0),
-  _mouse(0)
+  _keyboard(0)
 {
 }
 
@@ -18,18 +17,12 @@ InputManager::~InputManager ()
       _keyboard = 0;
     }
 
-    if (_mouse) {
-      _inputSystem->destroyInputObject(_mouse);
-      _mouse = 0;
-    }
-
     OIS::InputManager::destroyInputSystem(_inputSystem);
 
     _inputSystem = 0;
 
     // Limpiar todos los listeners.
     _keyListeners.clear();
-    _mouseListeners.clear();
     }
 }
 
@@ -57,26 +50,16 @@ InputManager::initialise
       (_inputSystem->createInputObject(OIS::OISKeyboard, true));
     _keyboard->setEventCallback(this);
 
-    _mouse = static_cast<OIS::Mouse*>
-      (_inputSystem->createInputObject(OIS::OISMouse, true));
-    _mouse->setEventCallback(this);
-
     // Get window size
     unsigned int width, height, depth;
     int left, top;
     renderWindow->getMetrics(width, height, depth, left, top);
-
-    // Set mouse region
-    this->setWindowExtents( width, height );
   }
 }
 
 void
 InputManager::capture ()
 {
-  // Capturar y actualizar cada frame.
-  if (_mouse)
-    _mouse->capture();
   
   if (_keyboard)
     _keyboard->capture();
@@ -99,22 +82,6 @@ InputManager::addKeyListener
 }
 
 void
-InputManager::addMouseListener
-(OIS::MouseListener *mouseListener, const std::string& instanceName)
-{
-  if (_mouse) {
-    // Comprobar si el listener existe.
-    itMouseListener = _mouseListeners.find(instanceName);
-    if (itMouseListener == _mouseListeners.end()) {
-      _mouseListeners[instanceName] = mouseListener;
-    }
-    else {
-      // Elemento duplicado; no hacer nada.
-    }
-  }
-}
-
-void
 InputManager::removeKeyListener
 (const std::string& instanceName)
 {
@@ -127,21 +94,6 @@ InputManager::removeKeyListener
     // No hacer nada.
   }
 }
-
-void
-InputManager::removeMouseListener 
-(const std::string& instanceName)
-{
-  // Comprobar si el listener existe.
-  itMouseListener = _mouseListeners.find(instanceName);
-  if (itMouseListener != _mouseListeners.end()) {
-    _mouseListeners.erase(itMouseListener);
-  }
-  else {
-    // No hacer nada.
-  }
-}
-
 void
 InputManager::removeKeyListener
 (OIS::KeyListener *keyListener)
@@ -155,27 +107,11 @@ InputManager::removeKeyListener
     }
   }
 }
-
-void
-InputManager::removeMouseListener
-(OIS::MouseListener *mouseListener)
-{
-  itMouseListener = _mouseListeners.begin();
-  itMouseListenerEnd = _mouseListeners.end();
-  for (; itMouseListener != itMouseListenerEnd; ++itMouseListener) {
-    if (itMouseListener->second == mouseListener) {
-      _mouseListeners.erase(itMouseListener);
-      break;
-    }
-  }
-}
-
 void
 InputManager::removeAllListeners
 ()
 {
   _keyListeners.clear();
-  _mouseListeners.clear();
 }
 
 void
@@ -185,32 +121,15 @@ InputManager::removeAllKeyListeners ()
 }
 
 void
-InputManager::removeAllMouseListeners ()
-{
-  _mouseListeners.clear();
-}
-
-void
 InputManager::setWindowExtents 
 (int width, int height)
 {
-  // Establecer la región del ratón.
-  // Llamar al hacer un resize.
-  const OIS::MouseState &mouseState = _mouse->getMouseState();
-  mouseState.width = width;
-  mouseState.height = height;
 }
 
 OIS::Keyboard*
 InputManager::getKeyboard ()
 {
     return _keyboard;
-}
-
-OIS::Mouse*
-InputManager::getMouse ()
-{
-    return _mouse;
 }
 
 bool
@@ -236,48 +155,6 @@ InputManager::keyReleased
   // Delega en los KeyListener añadidos.
   for (; itKeyListener != itKeyListenerEnd; ++itKeyListener) {
     itKeyListener->second->keyReleased( e );
-  }
-
-  return true;
-}
-
-bool
-InputManager::mouseMoved
-(const OIS::MouseEvent &e)
-{
-  itMouseListener = _mouseListeners.begin();
-  itMouseListenerEnd = _mouseListeners.end();
- // Delega en los MouseListener añadidos.
-  for (; itMouseListener != itMouseListenerEnd; ++itMouseListener) {
-    itMouseListener->second->mouseMoved( e );
-  }
-
-  return true;
-}
-
-bool
-InputManager::mousePressed
-(const OIS::MouseEvent &e, OIS::MouseButtonID id)
-{
-  itMouseListener = _mouseListeners.begin();
-  itMouseListenerEnd = _mouseListeners.end();
-  // Delega en los MouseListener añadidos.
-  for (; itMouseListener != itMouseListenerEnd; ++itMouseListener) {
-    itMouseListener->second->mousePressed( e, id );
-  }
-
-    return true;
-}
-
-bool
-InputManager::mouseReleased
-(const OIS::MouseEvent &e, OIS::MouseButtonID id)
-{
-  itMouseListener = _mouseListeners.begin();
-  itMouseListenerEnd = _mouseListeners.end();
-  // Delega en los MouseListener añadidos.
-  for (; itMouseListener != itMouseListenerEnd; ++itMouseListener) {
-    itMouseListener->second->mouseReleased( e, id );
   }
 
   return true;

@@ -46,12 +46,6 @@ class GameState {
   virtual void keyPressed (const OIS::KeyEvent &e) = 0;
   virtual void keyReleased (const OIS::KeyEvent &e) = 0;
 
-  virtual void mouseMoved (const OIS::MouseEvent &e) = 0; 
-  virtual void mousePressed (const OIS::MouseEvent &e, 
-			     OIS::MouseButtonID id) = 0;
-  virtual void mouseReleased (const OIS::MouseEvent &e, 
-			      OIS::MouseButtonID id) = 0;
-
   // Gestión básica para la gestión
   // de eventos antes y después de renderizar un frame.
   virtual bool frameStarted (const Ogre::FrameEvent& evt) = 0;

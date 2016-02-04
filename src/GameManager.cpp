@@ -38,7 +38,6 @@ GameManager::start
 
   // Registro como key y mouse listener...
   _inputMgr->addKeyListener(this, "GameManager");
-  _inputMgr->addMouseListener(this, "GameManager");
 
   // El GameManager es un FrameListener.
   _root->addFrameListener(this);
@@ -175,29 +174,5 @@ GameManager::keyReleased
 (const OIS::KeyEvent &e)
 {
   _states.top()->keyReleased(e);
-  return true;
-}
-
-bool
-GameManager::mouseMoved 
-(const OIS::MouseEvent &e)
-{
-  _states.top()->mouseMoved(e);
-  return true;
-}
-
-bool
-GameManager::mousePressed 
-(const OIS::MouseEvent &e, OIS::MouseButtonID id)
-{
-  _states.top()->mousePressed(e, id);
-  return true;
-}
-
-bool
-GameManager::mouseReleased
-(const OIS::MouseEvent &e, OIS::MouseButtonID id)
-{
-  _states.top()->mouseReleased(e, id);
   return true;
 }

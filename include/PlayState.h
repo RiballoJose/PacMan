@@ -24,6 +24,9 @@
 #include <Ogre.h>
 #include <OIS/OIS.h>
 #include <OgreOverlay.h>
+#include <OgreOverlaySystem.h>
+#include <OgreOverlayManager.h>
+#include <OgreOverlayContainer.h>
 #include <cstdlib>
 
 #include "GameState.h"
@@ -85,7 +88,8 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   Ogre::SceneNode* _clyde;//naranja
   std::vector<int>* _wallRows;
   std::vector<int>* _wallCols;
-
+  
+  Ogre::OverlayContainer* _panel;
   Ogre::OverlayManager* _overlayManager;
   Ogre::Overlay *_ovPlay;
   Ogre::OverlayElement *_o_score;
