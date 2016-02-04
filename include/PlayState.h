@@ -31,6 +31,7 @@
 #include <cstdlib>
 
 #include "GameState.h"
+#include "Graph.h"
 
 class PlayState : public Ogre::Singleton<PlayState>, public GameState
 {
@@ -62,6 +63,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   void destroyAllAttachedMovableObjects(Ogre::SceneNode* node);
   void removeScene();
   void createOverlay();
+  void calculateAdjs();
 
  protected:
   Ogre::Root* _root;
@@ -84,6 +86,10 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   std::vector<Ogre::SceneNode*> _lifes;
   Ogre::SceneNode* _pacman;
   Ogre::SceneNode* _blinky;//fantasma rojo
+  std::pair <double, double> _blinkyStart;//actual
+  std::pair <double, double> _blinkyPosC;//actual
+  std::pair <double, double> _blinkyPosP;//anterior
+  int _blinkyDir;
   Ogre::SceneNode* _pinky;//rosa
   Ogre::SceneNode* _inky;//azul cian
   Ogre::SceneNode* _clyde;//naranja
@@ -94,6 +100,8 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   Ogre::OverlayManager* _overlayManager;
   Ogre::Overlay *_ovPlay;
   Ogre::OverlayElement *_o_score;
+
+  Graph* _level;
   
 };
 

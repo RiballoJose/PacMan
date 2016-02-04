@@ -9,7 +9,7 @@ PlayState::enter ()
 {
   _root = Ogre::Root::getSingletonPtr();
   _sceneMgr = _root->getSceneManager("SceneManager");
-  _currentLevel = 1;
+  _currentLevel = 0;
   _pacSpeed = 3;
   _blinkySpeed = 2.5;
   _currentDir = _nextDir = _prevDir = _prevCol = _prevRow = 0;
@@ -30,7 +30,7 @@ PlayState::createOverlay()
   _sceneMgr->addRenderQueueListener(new Ogre::OverlaySystem());
   _overlayManager = Ogre::OverlayManager::getSingletonPtr();
   _ovPlay = _overlayManager->getByName("Play");
-  std::cout <<"Overlay? " << _ovPlay << '\n';
+  //std::cout <<"Overlay? " << _ovPlay << '\n';
   if(_ovPlay)
     _ovPlay->show();
 }
@@ -68,13 +68,23 @@ PlayState::createScene()
   _wallRows = new std::vector<int>();
   _wallCols = new std::vector<int>();
   int nGhost = 0;
-  
+
+  _level = new Graph;
+  GraphVertex *v1 = NULL;//scene->getGraph()->getVertex(edge[0]);
+  GraphVertex *v2 = NULL;//scene->getGraph()->getVertex(edge[1]);
   for(int f = _currentLevel*(31); f < _currentLevel*(31)+31; f++){
     for(int c = 0; c < _columnas; c++){
       bloq.str("");
       switch(_levels[f][c]){
       case 0://vacio
 	bloq << "Void(" << f << "," << c << ")";
+	/*
+	  v1 = _level->getVertex(f,c);
+	  v2 = _level->getVertex(f-1,c);
+	if(v2){_level->addEdge(v1,v2);std::cout << "Edge added1" << '\n';}
+	v2 = _level->getVertex(f, c-1);
+	if(v2){_level->addEdge(v1,v2);std::cout << "Edge added2" << '\n';}*/
+	
 	break;
       case 1://muros
 	bloq << "Wall(" << f << "," << c << ")";
@@ -88,6 +98,7 @@ PlayState::createScene()
 	break;
       case 2://Pac-dots segun wikipedia es la comida
 	bloq << "Pac-dot(" << f << "," << c << ")";
+	_level->addVertex(new GraphVertex(Node(f+c, f,c, bloq.str(), Ogre::Vector3(f, 0, c))));
 	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
 	//ent->setMaterialName(material.str());
@@ -97,6 +108,7 @@ PlayState::createScene()
 	break;
       case 3://comefantasmas
 	bloq << "Power-Pellet(" << f << "," << c << ")";
+	_level->addVertex(new GraphVertex(Node(f+c, f,c, bloq.str(), Ogre::Vector3(f, 0, c))));
 	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
 	//ent->setMaterialName(material.str());
@@ -112,6 +124,12 @@ PlayState::createScene()
 	  //ent->setMaterialName(material.str());
 	  _blinky->setScale(1.0, 1.0, 1.0);
 	  _blinky->attachObject(ent);
+	  _blinkyStart.first  = f-_blinky->getPosition().z;
+	  _blinkyStart.second = (c-_blinky->getPosition().x);
+	  _blinkyPosC.first  = f-_blinky->getPosition().z;
+	  _blinkyPosC.second = (c-_blinky->getPosition().x);
+	  _blinkyPosP.first = _blinkyPosC.first;
+	  _blinkyPosP.second = _blinkyPosC.second;
 	  break;
 	case 4://rosa
 	  bloq << "Pinky";
@@ -138,6 +156,7 @@ PlayState::createScene()
 	  _clyde->attachObject(ent);
 	  break;
 	default:
+	  bloq << "GhostZone(" << f << "," << c << ")";
 	  break;
 	}
 	nGhost++;
@@ -145,6 +164,8 @@ PlayState::createScene()
       case 5://donde empieza el pacman->cuidado:tenemos dos 5s
 	if(!_pacmanDef){
 	  bloq << "Pacman";
+	  _level->addVertex(new GraphVertex(Node(f+c, f,c, bloq.str(), Ogre::Vector3(f, 0, c))));
+	  _level->addVertex(new GraphVertex(Node(f+c, f,c, bloq.str(), Ogre::Vector3(f, 0, c+1))));
 	  _pacman = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  ent = _sceneMgr->createEntity(bloq.str(), "Nave.mesh");
 	  _pacman->setScale(0.15, 0.5, 0.75);
@@ -169,10 +190,26 @@ PlayState::createScene()
       default:
 	break;
       }
+      if(_levels[f][c]!=1 and _levels[f][c]!=9 and
+	 ((((c > 0 and _levels[f][c-1]!=1) and ((f > _currentLevel*(31) and _levels[f-1][c]!=1) or
+						(f < (_currentLevel+1)*(31) and _levels[f+1][c]!=1))) or
+	   ((c < _columnas and _levels[f][c+1]!=1) and ((f > _currentLevel*(31) and _levels[f-1][c]!=1) or
+							(f < (_currentLevel+1)*(31) and _levels[f+1][c]!=1))) or
+	   ((f > _currentLevel*(31) and _levels[f-1][c]!=1) and ((c > 0 and _levels[f][c-1]!=1) or
+								     (c < _columnas and _levels[f][c+1]!=1))) or
+	   ((f < (_currentLevel+1)*(31) and _levels[f+1][c]!=1) and ((c > 0 and _levels[f][c-1]!=1) or
+									 (c < _columnas and _levels[f][c+1]!=1)))))){
+	/*(((c > 0 and _levels[f][c-1]!=1) or (c < _columnas and _levels[f][c+1]!=1)) and
+	  (f > _currentLevel*(31) and _levels[f-1][c]!=1) or (f < (_currentLevel+1)*(31) and _levels[f+1][c]!=1))){*/
+	std::cout << "Vertice " << bloq.str() << '\n';
+	_level->addVertex(new GraphVertex(Node(f+c,f,c, bloq.str(), Ogre::Vector3(f, 0, c))));
+	 /*{*/ 
+      }
       aux+=1;
     }
     aux = -14;
   }
+  calculateAdjs();
   _sceneMgr->setShadowTechnique(Ogre::SHADOWTYPE_STENCIL_MODULATIVE);
   _sceneMgr->setShadowColour(Ogre::ColourValue(0.5, 0.5, 0.5) );
   _sceneMgr->setAmbientLight(Ogre::ColourValue(0.9, 0.9, 0.9));
@@ -188,6 +225,37 @@ PlayState::createScene()
   _light->setDiffuseColour(1, 1, 1);
   _light->setSpotlightFalloff(5.0f);
   _light->setCastShadows(true);
+}
+
+void
+PlayState::calculateAdjs(){
+  std::vector<GraphVertex*> vertexes = _level->getVertexes();
+  std::vector<GraphVertex*>::const_iterator it;
+  GraphVertex* aux = NULL;
+  bool wall = false;
+  bool vertex = false;
+  for (it = vertexes.begin(); it != vertexes.end(); ++it){
+    for(int f = (*it)->getData().getZ()+1; f < _currentLevel*(31) and !wall and ! vertex; f++){
+      if (_levels[f][(*it)->getData().getZ()]==1){wall = true;}
+      else if((aux = _level->getVertex(f, (*it)->getData().getX()))!=NULL){
+	vertex = true;
+	//_level->addEdge((*it), aux);
+	std::cout << (*it)->getData().getX() <<  "," << (*it)->getData().getZ() << " enlaca con ";
+	std::cout << aux->getData().getX() << "," <<  aux->getData().getZ() << '\n';
+      }
+    }
+    wall = vertex = false;
+    for(int c = (*it)->getData().getX()+1; c < _columnas and !wall and ! vertex; c++){
+      if (_levels[(*it)->getData().getZ()][c]==1){wall = true;}
+      else if((aux = _level->getVertex((*it)->getData().getX(), c))!=NULL){
+	vertex = true;
+	//_level->addEdge((*it), aux);
+	std::cout << (*it)->getData().getX() <<  "," << (*it)->getData().getZ() << " enlaca con ";
+	std::cout << aux->getData().getX() << "," <<  aux->getData().getZ() << '\n';
+      }
+    }
+    wall = vertex = false;
+  }
 }
 
 void
@@ -233,7 +301,7 @@ PlayState::frameStarted
     pacmanMove();
     ghostMove();
   }
-  else{//nivel terminado
+  else if(!_exitGame){//nivel terminado
     nextLevel();
   }
   return true;
@@ -302,7 +370,39 @@ PlayState::pacmanMove()
 void
 PlayState::ghostMove()//grafos...
 {
-  /*int togo = rand()%4;
+  /*if((int)_blinkyPosP.first != (int)_blinkyPosC.first
+     and (int)_blinkyPosP.second != (int)_blinkyPosC.second){
+    _blinkyPosP.first = _blinkyPosC.first;
+    _blinkyPosP.second = _blinkyPosC.second;
+  }
+  _blinkyPosC.first = _blinky->getPosition().x+_blinkyStart.first;
+  _blinkyPosC.second = _blinky->getPosition().z+_blinkyStart.second;
+  if((_blinkyPosC.first - (int)_blinkyPosC.first == 0)
+     and (_blinkyPosC.second - (int)_blinkyPosC.second == 0)){
+    _blinkyDir = rand()%4;
+    _blinkyMove.x = 0; _blinkyMove.z = 0;
+  }
+  
+  switch(_blinkyDir){
+  case 0:
+    if(_levels[(int)_blinkyPosC.first+1][(int)_blinkyPosC.second]!=1){_blinkyMove.x=1;}
+    else{_blinkyMove.x=0;}
+    break;
+  case 1:
+    if(_levels[(int)_blinkyPosC.first-1][(int)_blinkyPosC.second]!=1){_blinkyMove.x=-1;}
+    else{_blinkyMove.x=0;}
+    break;
+  case 2:
+    if(_levels[(int)_blinkyPosC.first][(int)_blinkyPosC.second-1]!=1){_blinkyMove.z=-1;}
+    else{_blinkyMove.z=0;}
+    break;
+  case 3:
+    if(_levels[(int)_blinkyPosC.first+1][(int)_blinkyPosC.second+1]!=1){_blinkyMove.z=1;}
+    else{_blinkyMove.z=0;}
+    break;
+    }
+  
+  int togo = rand()%4;
   if (colisionMap(-1, _blinky)){
     _blinkyMove.x = 0;_blinkyMove.z = 0;
     if(togo == 0 and !colisionMap(0, _blinky)){_blinkyMove.x = 1;}
