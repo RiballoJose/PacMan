@@ -29,8 +29,7 @@ PlayState::createOverlay()
 {
   _sceneMgr->addRenderQueueListener(new Ogre::OverlaySystem());
   _overlayManager = Ogre::OverlayManager::getSingletonPtr();
-  _ovPlay = _overlayManager->getByName("Info");
-  //_o_score = _overlayManager->getOverlayElement("PlayText");
+  _ovPlay = _overlayManager->getByName("Play");
   std::cout <<"Overlay? " << _ovPlay << '\n';
   if(_ovPlay)
     _ovPlay->show();
