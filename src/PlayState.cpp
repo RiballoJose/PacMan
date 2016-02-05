@@ -69,10 +69,11 @@ PlayState::createScene()
   _wallRows = new std::vector<int>();
   _wallCols = new std::vector<int>();
   int nGhost = 0;
+  int id = 0;
 
   _level = new Graph;
-  GraphVertex *v1 = NULL;//scene->getGraph()->getVertex(edge[0]);
-  GraphVertex *v2 = NULL;//scene->getGraph()->getVertex(edge[1]);
+  //GraphVertex *v1 = NULL;//scene->getGraph()->getVertex(edge[0]);
+  //GraphVertex *v2 = NULL;//scene->getGraph()->getVertex(edge[1]);
   for(int f = _currentLevel*(31); f < _currentLevel*(31)+31; f++){
     for(int c = 0; c < _columnas; c++){
       bloq.str("");
@@ -212,8 +213,9 @@ PlayState::createScene()
 	   ((f < (_currentLevel+1)*(31) and _levels[f+1][c]!=1) and ((c > 0 and _levels[f][c-1]!=1) or
 								     (c < _columnas and _levels[f][c+1]!=1)))))){
 	//std::cout << ": Vertice " << bloq.str() << '\n';
-	_level->addVertex(new GraphVertex(Node(f+c,f,c, bloq.str(), Ogre::Vector3(f, 0, c))));
+	_level->addVertex(new GraphVertex(Node(id,f,c, bloq.str(), Ogre::Vector3(f, 0, c))));
       }
+      id++;
       aux+=1;
     }
     aux = -14;
@@ -321,9 +323,9 @@ void
 PlayState::pacmanMove()
 {
   if(_currentDir == 1 and !colisionMap(0, _pacman)){_pacMove.x = 1;}
-  else if(_currentDir == 2 and !colisionMap(1, _pacman)){_pacMove.x = -1;}
-  else if(_currentDir == 3 and !colisionMap(2, _pacman)){_pacMove.z = -1;}
-  else if(_currentDir == 4 and !colisionMap(3, _pacman)){_pacMove.z = 1;}
+  else if(_currentDir == 3 and !colisionMap(1, _pacman)){_pacMove.x = -1;}
+  else if(_currentDir == 4 and !colisionMap(2, _pacman)){_pacMove.z = -1;}
+  else if(_currentDir == 2 and !colisionMap(3, _pacman)){_pacMove.z = 1;}
   _pacman->translate(_pacMove*_deltaT*_pacSpeed);
   _currentRow = (int)(_pacman->getPosition().z+_startRow+0.5);
   _currentCol = (int)(_pacman->getPosition().x+_startCol);
@@ -358,6 +360,7 @@ PlayState::pacmanMove()
 	nodo->removeAndDestroyAllChildren();
 	_sceneMgr->destroySceneNode(nodo);
 	_pacSpeed = 4;
+	//_endLevel = true;//para probar a pasar de nivel rapido
       }
     }
   }
@@ -382,33 +385,35 @@ PlayState::ghostMove()//grafos...
 {
   std::vector<GraphVertex*>vertexes;
   GraphVertex* vert;
-  _blinkyMove.x = 0; _blinkyMove.z = 0;
+  double intpart;
   //std::cout << _blinkyStart.first+(int)_blinky->getPosition().z -2 << ", " << _blinkyStart.second+(int)_blinky->getPosition().x+2 << '\n';
-  if((vert = _level->getVertex(_blinkyStart.first+(int)_blinky->getPosition().z -2, _blinkyStart.second+(int)_blinky->getPosition().x+2))!=NULL){
-    
+  if(modf(_blinky->getPosition().z, &intpart) < 0.1 and modf(_blinky->getPosition().x, &intpart) < 0.1 and
+     (vert = _level->getVertex(_blinkyStart.first+_blinky->getPosition().z -2, _blinkyStart.second+_blinky->getPosition().x+2))!=NULL){
     vertexes = _level->adjacents(vert->getData().getZ(), vert->getData().getX());
+    //std::cout << "En if";
     std::vector<GraphVertex*>::const_iterator it;
-    //_blinkyDir = rand()%4;
+    _blinkyDir = rand()%4;
     for (it = vertexes.begin();it != vertexes.end();++it){
-      if(((*it)->getData().getX() < _blinkyStart.second+(int)_blinky->getPosition().x +2 and
+      if(_blinkyDir ==0 and((*it)->getData().getX() < _blinkyStart.second+(int)_blinky->getPosition().x +2 and
 			      (int)(*it)->getData().getZ() == _blinkyStart.first+(int)_blinky->getPosition().z -2)){//va a izq
 	_blinkyMove.x = -1; _blinkyMove.z = 0;
       }
-      else if(((*it)->getData().getX() > _blinkyStart.second+(int)_blinky->getPosition().x +2 and
+      else if(_blinkyDir ==1 and((*it)->getData().getX() > _blinkyStart.second+(int)_blinky->getPosition().x +2 and
 				   (int)(*it)->getData().getZ() == _blinkyStart.first+(int)_blinky->getPosition().z -2)){
 	_blinkyMove.x = 1; _blinkyMove.z = 0;
       }
-      else if(((*it)->getData().getZ() > _blinkyStart.first+(int)_blinky->getPosition().z -2 and
+      else if(_blinkyDir ==2 and((*it)->getData().getZ() > _blinkyStart.first+(int)_blinky->getPosition().z -2 and
 				   (int)(*it)->getData().getX() == _blinkyStart.second+(int)_blinky->getPosition().x +2)){
 	_blinkyMove.x = 0; _blinkyMove.z = 1;
       }
-      else if(((*it)->getData().getZ() < _blinkyStart.first+(int)_blinky->getPosition().z -2 and
+      else if(_blinkyDir ==3 and((*it)->getData().getZ() < _blinkyStart.first+(int)_blinky->getPosition().z -2 and
 				   (int)(*it)->getData().getX() == _blinkyStart.second+(int)_blinky->getPosition().x +2)){
 	_blinkyMove.x = 0; _blinkyMove.z = -1;
       }
       //std::cout << (*it)->getData().getZ() << "," << (*it)->getData().getX() << '\n';
     }
   }
+  else{_blinkyMove.x = 0; _blinkyMove.z = 0;}
   
   /*switch(_blinkyDir){
   case 0:
@@ -467,6 +472,7 @@ PlayState::removeLevel()
   _pinky->removeAndDestroyAllChildren();
   _inky->removeAndDestroyAllChildren();
   _clyde->removeAndDestroyAllChildren();
+  //delete _level;//da error
   destroyAllAttachedMovableObjects(_sceneMgr->getRootSceneNode());
   _sceneMgr->getRootSceneNode()->removeAndDestroyAllChildren();
   _score = 0;
@@ -581,24 +587,32 @@ PlayState::keyPressed
       }
       break;
   case OIS::KC_RIGHT:
+    _pacman->lookAt(Ogre::Vector3(0,0,999), _pacman->TS_WORLD);
     _prevDir = _currentDir;
     _currentDir = 1;
     _nextDir = 1;
+    //_pacman->yaw((_currentDir-_prevDir)*Ogre::Degree(90));
     break;
   case OIS::KC_LEFT:
-    _prevDir = _currentDir;
-    _currentDir = 2;
-    _nextDir = 2;
-    break;
-  case OIS::KC_UP:
+    _pacman->lookAt(Ogre::Vector3(0,0,-999), _pacman->TS_WORLD);
     _prevDir = _currentDir;
     _currentDir = 3;
     _nextDir = 3;
+    //_pacman->yaw((_currentDir-_prevDir)*Ogre::Degree(90));
     break;
-  case OIS::KC_DOWN:
+  case OIS::KC_UP:
+    _pacman->lookAt(Ogre::Vector3(-999,0,0), _pacman->TS_WORLD);
     _prevDir = _currentDir;
     _currentDir = 4;
     _nextDir = 4;
+    //_pacman->yaw((_currentDir-_prevDir)*Ogre::Degree(90));
+    break;
+  case OIS::KC_DOWN:
+    _pacman->lookAt(Ogre::Vector3(999,0,0), _pacman->TS_WORLD);
+    _prevDir = _currentDir;
+    _currentDir = 2;
+    _nextDir = 2;
+    //_pacman->yaw((_currentDir-_prevDir)*Ogre::Degree(90));
     break;
   default:
     break;
