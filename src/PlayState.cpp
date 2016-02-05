@@ -120,8 +120,8 @@ PlayState::createScene()
 	case 1://rojo
 	  bloq << "Blinky";
 	  _blinky = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
-	  ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
-	  //ent->setMaterialName(material.str());
+	  ent = _sceneMgr->createEntity(bloq.str(), "Fantasma.mesh");
+	  ent->setMaterialName("F_rojo_mat");
 	  _blinky->setScale(1.0, 1.0, 1.0);
 	  _blinky->attachObject(ent);
 	  _blinkyStart.first  = f;
@@ -137,24 +137,24 @@ PlayState::createScene()
 	case 4://rosa
 	  bloq << "Pinky";
 	  _pinky = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
-	  ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
-	  //ent->setMaterialName(material.str());
+	  ent = _sceneMgr->createEntity(bloq.str(), "Fantasma.mesh");
+	  ent->setMaterialName("F_rosa_mat");
 	  _pinky->setScale(1.0, 1.0, 1.0);
 	  _pinky->attachObject(ent);
 	  break;
 	case 13://azul
 	  bloq << "Inky";
 	  _inky = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
-	  ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
-	  //ent->setMaterialName(material.str());
+	  ent = _sceneMgr->createEntity(bloq.str(), "Fantasma.mesh");
+	  ent->setMaterialName("F_azul_mat");
 	  _inky->setScale(1.0, 1.0, 1.0);
 	  _inky->attachObject(ent);
 	  break;
 	case 16://naranja
 	  bloq << "Clyde";
 	  _clyde = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
-	  ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
-	  //ent->setMaterialName(material.str());
+	  ent = _sceneMgr->createEntity(bloq.str(), "Fantasma.mesh");
+	 ent->setMaterialName("F_naranja_mat");
 	  _clyde->setScale(1.0, 1.0, 1.0);
 	  _clyde->attachObject(ent);
 	  break;
