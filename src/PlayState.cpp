@@ -209,7 +209,7 @@ PlayState::createScene()
 							(f < (_currentLevel+1)*(31) and _levels[f+1][c]!=1))) or
 	   ((f > _currentLevel*(31) and _levels[f-1][c]!=1) and ((c > 0 and _levels[f][c-1]!=1) or
 								 (c < _columnas and _levels[f][c+1]!=1))) or
-	   ((f < (_currentLevel+1)*(31) and _levels[f+1][c]!=1) and ((c > 0 and _levels[f][c-1]!=1) or
+	   ((f+1 < (_currentLevel+1)*(31) and _levels[f+1][c]!=1) and ((c > 0 and _levels[f][c-1]!=1) or
 								     (c < _columnas and _levels[f][c+1]!=1)))))){
 	//std::cout << ": Vertice " << bloq.str() << '\n';
 	_level->addVertex(new GraphVertex(Node(id,f,c, bloq.str(), Ogre::Vector3(f, 0, c))));
@@ -380,77 +380,26 @@ PlayState::pacmanMove()
 }
 
 void
-PlayState::ghostMove()//grafos...
+PlayState::ghostMove()
 {
   std::vector<GraphVertex*>vertexes;
   GraphVertex* vert;
   double intpart;
+  //double dirX = 0.0;
+  //double dirZ = 0.0;
+  //_blinkyMove.x = 0; _blinkyMove.z = 0;
+  //std::cout << _deltaT << '\n';
   //std::cout << _blinkyStart.first+(int)_blinky->getPosition().z -2 << ", " << _blinkyStart.second+(int)_blinky->getPosition().x+2 << '\n';
-  if(modf(_blinky->getPosition().z, &intpart) < 0.1 and modf(_blinky->getPosition().x, &intpart) < 0.1 and
+  if(modf(_blinky->getPosition().z, &intpart) <_deltaT and modf(_blinky->getPosition().x, &intpart) <_deltaT and
      (vert = _level->getVertex(_blinkyStart.first+_blinky->getPosition().z -2, _blinkyStart.second+_blinky->getPosition().x+2))!=NULL){
-    vertexes = _level->adjacents(vert->getData().getZ(), vert->getData().getX());
-    //std::cout << "En if";
-    std::vector<GraphVertex*>::const_iterator it;
-    _blinkyDir = rand()%4;
-    for (it = vertexes.begin();it != vertexes.end();++it){
-      if(_blinkyDir ==0 and((*it)->getData().getX() < _blinkyStart.second+(int)_blinky->getPosition().x +2 and
-			      (int)(*it)->getData().getZ() == _blinkyStart.first+(int)_blinky->getPosition().z -2)){//va a izq
-	_blinkyMove.x = -1; _blinkyMove.z = 0;
-      }
-      else if(_blinkyDir ==1 and((*it)->getData().getX() > _blinkyStart.second+(int)_blinky->getPosition().x +2 and
-				   (int)(*it)->getData().getZ() == _blinkyStart.first+(int)_blinky->getPosition().z -2)){
-	_blinkyMove.x = 1; _blinkyMove.z = 0;
-      }
-      else if(_blinkyDir ==2 and((*it)->getData().getZ() > _blinkyStart.first+(int)_blinky->getPosition().z -2 and
-				   (int)(*it)->getData().getX() == _blinkyStart.second+(int)_blinky->getPosition().x +2)){
-	_blinkyMove.x = 0; _blinkyMove.z = 1;
-      }
-      else if(_blinkyDir ==3 and((*it)->getData().getZ() < _blinkyStart.first+(int)_blinky->getPosition().z -2 and
-				   (int)(*it)->getData().getX() == _blinkyStart.second+(int)_blinky->getPosition().x +2)){
-	_blinkyMove.x = 0; _blinkyMove.z = -1;
-      }
-      //std::cout << (*it)->getData().getZ() << "," << (*it)->getData().getX() << '\n';
-    }
+    vertexes = _level->getLinks(vert);
+    _blinkyDir = rand()%vertexes.size();
+    _blinkyMove.x = vertexes.at(_blinkyDir)->getData().getX()-(_blinkyStart.second+(int)(_blinky->getPosition().x) +2);
+    _blinkyMove.z = vertexes.at(_blinkyDir)->getData().getZ()-(_blinkyStart.first+(int)(_blinky->getPosition().z) -2);
+    //_blinky->setPosition(_blinky->getPosition()+_blinkyMove);
+    //std::cout << _blinkyMove.z << "," << _blinkyMove.x << '\n';
   }
-  else{_blinkyMove.x = 0; _blinkyMove.z = 0;}
-  
-  /*switch(_blinkyDir){
-  case 0:
-    if(_levels[(int)_blinkyPosC.first+1][(int)_blinkyPosC.second]!=1){_blinkyMove.x=1;}
-    else{_blinkyMove.x=0;}
-    break;
-  case 1:
-    if(_levels[(int)_blinkyPosC.first-1][(int)_blinkyPosC.second]!=1){_blinkyMove.x=-1;}
-    else{_blinkyMove.x=0;}
-    break;
-  case 2:
-    if(_levels[(int)_blinkyPosC.first][(int)_blinkyPosC.second-1]!=1){_blinkyMove.z=-1;}
-    else{_blinkyMove.z=0;}
-    break;
-  case 3:
-    if(_levels[(int)_blinkyPosC.first+1][(int)_blinkyPosC.second+1]!=1){_blinkyMove.z=1;}
-    else{_blinkyMove.z=0;}
-    break;
-    }
-  
-  int togo = rand()%4;
-  if (colisionMap(-1, _blinky)){
-    _blinkyMove.x = 0;_blinkyMove.z = 0;
-    if(togo == 0 and !colisionMap(0, _blinky)){_blinkyMove.x = 1;}
-    else if(togo == 1 and !colisionMap(1, _blinky)){_blinkyMove.x = -1;}
-    else if(togo == 3 and !colisionMap(2, _blinky)){_blinkyMove.z = -1;}
-    else if(togo == 4 and !colisionMap(3, _blinky)){_blinkyMove.z = 1;}
-  }
-  else if(!_isblinkyMoving){
-    switch(togo){
-    case 0: _blinkyMove.x = 1; _blinkyMove.z = 0; break;
-    case 1: _blinkyMove.x = -1;_blinkyMove.z = 0; break;
-    case 2: _blinkyMove.z = -1;_blinkyMove.x = 0; break;
-    case 3: _blinkyMove.z = 1; _blinkyMove.x = 0; break;
-    }
-    _isblinkyMoving = true;
-    }*/
-  _blinky->translate(_blinkyMove*_deltaT*_blinkySpeed);
+  _blinky->translate(_blinkyMove);
 }
 
 void
@@ -472,6 +421,8 @@ PlayState::removeLevel()
   _inky->removeAndDestroyAllChildren();
   _clyde->removeAndDestroyAllChildren();
   //delete _level;//da error
+  _level->getVertexes().clear();
+  _level->getEdges().clear();
   destroyAllAttachedMovableObjects(_sceneMgr->getRootSceneNode());
   _sceneMgr->getRootSceneNode()->removeAndDestroyAllChildren();
   _score = 0;
@@ -579,10 +530,10 @@ PlayState::keyPressed
 	_camera->setPosition(Ogre::Vector3(0, 32, 37));
 	_camera->lookAt(Ogre::Vector3(0, 0, 0));
 	break;
-      case 2:
+	/*case 2:
 	_camera->setPosition(_pacman->getPosition());
 	_camera->lookAt(Ogre::Vector3(0, 0, 0));
-	break;
+	break;*/
       }
       break;
   case OIS::KC_RIGHT:

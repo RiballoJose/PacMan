@@ -30,6 +30,8 @@ class Graph
   std::vector<GraphVertex*> getVertexes () const { return _vertexes; }
   std::vector<GraphEdge*> getEdges () const { return _edges; }
 
+  std::vector<GraphVertex*> getLinks(GraphVertex* pOrigin);
+
  private:
   std::vector<GraphVertex*> _vertexes;
   std::vector<GraphEdge*> _edges;

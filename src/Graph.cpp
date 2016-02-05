@@ -10,8 +10,8 @@
 Graph::Graph ()
 {
   // Reserva de memoria inicial.
-  _vertexes.reserve(25);
-  _edges.reserve(25);
+  _vertexes.reserve(5);
+  _edges.reserve(5);
 }
 
 Graph::~Graph ()
@@ -85,4 +85,17 @@ Graph::getVertex
       return (*it);
 
   return NULL;
+}
+
+std::vector<GraphVertex*> Graph::getLinks(GraphVertex* pOrigin)
+{
+  std::vector<GraphVertex*> aux;
+  std::vector<GraphEdge*>::const_iterator it;
+  for(it= _edges.begin();it!=_edges.end();++it){
+    if ((*it)->getOrigin()->getData().getZ() == pOrigin->getData().getZ() and
+	(*it)->getOrigin()->getData().getX() == pOrigin->getData().getX()){
+      aux.push_back((*it)->getDestination());
+    }
+  }
+  return aux;
 }

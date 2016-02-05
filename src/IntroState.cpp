@@ -1,4 +1,4 @@
-  #include "IntroState.h"
+#include "IntroState.h"
 #include "MenuState.h"
 
 template<> IntroState* Ogre::Singleton<IntroState>::msSingleton = 0;
