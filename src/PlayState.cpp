@@ -58,8 +58,7 @@ PlayState::createScene()
   for(int i = 0; i < 3; i++){
     bloq << "Life_" << i;
     nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode((bloq.str()),Ogre::Vector3(aux, 0.5, 19.5));
-    ent = _sceneMgr->createEntity("Nave.mesh");
-    nodo->setScale(0.075, 0.5, 0.375);
+    ent = _sceneMgr->createEntity("Pacman.mesh");
     nodo->attachObject(ent);
     _lifes.push_back(nodo);
 
