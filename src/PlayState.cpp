@@ -11,8 +11,7 @@ PlayState::enter ()
   _sceneMgr = _root->getSceneManager("SceneManager");
   _currentLevel = 0;
   _pacSpeed = 3;
-  _blinkySpeed = 2.5;
-  _blinkyDir = rand()%4;
+  _blinkySpeed = 1;
   _currentDir = _nextDir = _prevDir = _prevCol = _prevRow = 0;
   _nPacDots = _score = 0;
   _camera = _sceneMgr->getCamera("IntroCamera");
@@ -107,44 +106,36 @@ PlayState::createScene()
 	switch(nGhost){
 	case 1://rojo
 	  bloq << "Blinky";
-	  _blinky = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+	  //Ghost _blinky = new Ghost(
+	  _blinky = new Ghost(_sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12))), f, c, 1.0);
 	  ent = _sceneMgr->createEntity(bloq.str(), "Fantasma.mesh");
 	  ent->setMaterialName("F_rojo_mat");
-	  _blinky->setScale(1.0, 1.0, 1.0);
-	  _blinky->attachObject(ent);
-	  _blinkyStart.first  = f;
-	  _blinkyStart.second = c;
-	  //std::cout << f << ", " << c << " igual a ";
-	  //std::cout << _blinky->getPosition().z << ", " << _blinky->getPosition().x << '\n';
-	  /*
-	  _blinkyPosC.first  = f-_blinky->getPosition().z;
-	  _blinkyPosC.second = (c-_blinky->getPosition().x);
-	  _blinkyPosP.first = _blinkyPosC.first;
-	  _blinkyPosP.second = _blinkyPosC.second;*/
+	  _blinky->getNode()->setScale(1.0, 1.0, 1.0);
+	  _blinky->getNode()->attachObject(ent);
 	  break;
 	case 4://rosa
 	  bloq << "Pinky";
-	  _pinky = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+	  _pinky = new Ghost(_sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12))), f, c, 1.0);
 	  ent = _sceneMgr->createEntity(bloq.str(), "Fantasma.mesh");
 	  ent->setMaterialName("F_rosa_mat");
-	  _pinky->setScale(1.0, 1.0, 1.0);
-	  _pinky->attachObject(ent);
+	  _pinky->getNode()->setScale(1.0, 1.0, 1.0);
+	  _pinky->getNode()->attachObject(ent);
 	  break;
 	case 13://azul
 	  bloq << "Inky";
-	  _inky = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+	  _inky = new Ghost(_sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12))), f, c, 1.0);
 	  ent = _sceneMgr->createEntity(bloq.str(), "Fantasma.mesh");
 	  ent->setMaterialName("F_azul_mat");
-	  _inky->setScale(1.0, 1.0, 1.0);
-	  _inky->attachObject(ent);
+	  _inky->getNode()->setScale(1.0, 1.0, 1.0);
+	  _inky->getNode()->attachObject(ent);
 	  break;
 	case 16://naranja
 	  bloq << "Clyde";
-	  _clyde = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+	  _clyde = new Ghost(_sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12))), f, c, 1.0);
 	  ent = _sceneMgr->createEntity(bloq.str(), "Fantasma.mesh");
 	 ent->setMaterialName("F_naranja_mat");
-	  _clyde->setScale(1.0, 1.0, 1.0);
-	  _clyde->attachObject(ent);
+	  _clyde->getNode()->setScale(1.0, 1.0, 1.0);
+	  _clyde->getNode()->attachObject(ent);
 	  break;
 	default:
 	  bloq << "GhostZone(" << f << "," << c << ")";
@@ -299,7 +290,10 @@ PlayState::frameStarted
       }
       }*/
     pacmanMove();
-    ghostMove();
+    ghostMove(_blinky, -2, 2);
+    ghostMove(_pinky, -2, -1);
+    ghostMove(_inky, -4, 2);
+    ghostMove(_clyde, -4, -1);
   }
   else if(!_exitGame){//nivel terminado
     nextLevel();
@@ -367,51 +361,75 @@ PlayState::pacmanMove()
     }
   }
 }
-
 void
+PlayState::ghostMove(Ghost* ghost, int f, int c)
+{
+  std::vector<GraphVertex*>vertexes;
+  GraphVertex* vert;
+  double intX, intZ;
+  double decX = 0.0;
+  double decZ = 0.0;
+  
+  decX = (std::modf(ghost->getNode()->getPosition().x, &intX));
+  decZ = (std::modf(ghost->getNode()->getPosition().z, &intZ));
+  //std::cout << decX << "," << decZ << '\n';
+  if(((std::abs(decZ) <_deltaT) or (std::abs(decZ) >1-_deltaT)) and
+     ((std::abs(decX) <_deltaT) or (std::abs(decX) >1-_deltaT)) and
+     (vert = _level->getVertex(ghost->getStart().first+ghost->getNode()->getPosition().z+f+_deltaT,
+			       ghost->getStart().second+ghost->getNode()->getPosition().x+c+_deltaT))!=NULL){
+    vertexes = _level->getLinks(vert);
+    ghost->setMove(_level->getMove(vert, vertexes.at(rand()%vertexes.size())));
+    if(ghost->getMove().x==0){
+      if(std::abs(decX) > 0 and std::abs(decX)<0.5)
+	ghost->getNode()->setPosition(Ogre::Vector3(ghost->getNode()->getPosition().x-decX, 0, ghost->getNode()->getPosition().z));
+      else if(decX >0.5)
+	ghost->getNode()->setPosition(Ogre::Vector3(ghost->getNode()->getPosition().x-decX+1, 0, ghost->getNode()->getPosition().z));
+      else if(decX <-0.5)
+	ghost->getNode()->setPosition(Ogre::Vector3(ghost->getNode()->getPosition().x-decX-1, 0, ghost->getNode()->getPosition().z));
+    }
+    else if(ghost->getMove().z==0){
+      if(std::abs(decZ) > 0 and std::abs(decZ)<0.5)
+	ghost->getNode()->setPosition(Ogre::Vector3(ghost->getNode()->getPosition().x, 0,ghost->getNode()->getPosition().z-decZ));
+      else if(decZ > 0.5)
+	ghost->getNode()->setPosition(Ogre::Vector3(ghost->getNode()->getPosition().x, 0,ghost->getNode()->getPosition().z-decZ+1));
+      else if(decZ < -0.5)
+	ghost->getNode()->setPosition(Ogre::Vector3(ghost->getNode()->getPosition().x, 0,ghost->getNode()->getPosition().z-decZ-1));
+    }
+  }
+  ghost->getNode()->translate(ghost->getMove()*_deltaT*ghost->getSpeed());
+}
+/*void
 PlayState::ghostMove()
 {
   std::vector<GraphVertex*>vertexes;
   GraphVertex* vert;
   double intX, intZ;
-  double decX = (std::modf(_blinky->getPosition().x, &intX));
-  double decZ = (std::modf(_blinky->getPosition().z, &intZ));
+  double decX = 0.0;
+  double decZ = 0.0;
   
-  std::cout << "posX =" << _blinky->getPosition().x << ", posZ =" << _blinky->getPosition().z << '\n';
-  std::cout << "intX =" << intX << ", intZ =" << intZ << '\n' ;
-  std::cout << "decX =" << decX << ", decZ =" << decZ << '\n' << '\n';
-  
+  decX = (std::modf(_blinky->getPosition().x, &intX));
+  decZ = (std::modf(_blinky->getPosition().z, &intZ));
   if(((std::abs(decZ) <_deltaT) or (std::abs(decZ) >1-_deltaT)) and
      ((std::abs(decX) <_deltaT) or (std::abs(decX) >1-_deltaT)) and
-     (vert = _level->getVertex(_blinkyStart.first+_blinky->getPosition().z-2,
-			       _blinkyStart.second+_blinky->getPosition().x+2))!=NULL){
+     (vert = _level->getVertex(_blinkyStart.first+_blinky->getPosition().z-2+_deltaT,
+			       _blinkyStart.second+_blinky->getPosition().x+2+_deltaT))!=NULL){
     vertexes = _level->getLinks(vert);
-    _blinkyDir = rand()%vertexes.size();
-    _blinkyMove = _level->getMove(vert, vertexes.at(_blinkyDir));
-    std::cout << "movX =" << _blinkyMove.x << ", movZ =" << _blinkyMove.z << '\n'<< '\n';
+    _blinkyMove = _level->getMove(vert, vertexes.at(rand()%vertexes.size()));
     if(_blinkyMove.x==0){
-      if(std::abs(decX) > 0 and std::abs(decX)<0.5){
-	std::cout << "1" << '\n';
-	_blinky->setPosition(Ogre::Vector3(_blinky->getPosition().x-decX, 0, 2));
-      }
-      else if(std::abs(decX) >0.5){
-	std::cout << "2" << '\n';
-	_blinky->setPosition(Ogre::Vector3(_blinky->getPosition().x-decX, 0, 2));
-      }
+      if(std::abs(decX) > 0 and std::abs(decX)<0.5)
+	_blinky->setPosition(Ogre::Vector3(_blinky->getPosition().x-decX, 0, _blinky->getPosition().z));
+      else if(decX >0.5){_blinky->setPosition(Ogre::Vector3(_blinky->getPosition().x-decX+1, 0, _blinky->getPosition().z));}
+      else if(decX <-0.5){_blinky->setPosition(Ogre::Vector3(_blinky->getPosition().x-decX-1, 0, _blinky->getPosition().z));}
     }
     else if(_blinkyMove.z==0){
-      if(std::abs(decZ) > 0 and std::abs(decZ)<0.5){
-	std::cout << "3" << '\n';
-	_blinky->setPosition(Ogre::Vector3(-1, 0,_blinky->getPosition().z-decZ));
-      }
-      else if(std::abs(decZ) > 0.5){
-	std::cout << "4" << '\n';
-	_blinky->setPosition(Ogre::Vector3(-1, 0,_blinky->getPosition().z-decZ));
-      }
+      if(std::abs(decZ) > 0 and std::abs(decZ)<0.5)
+	_blinky->setPosition(Ogre::Vector3(_blinky->getPosition().x, 0,_blinky->getPosition().z-decZ));
+      else if(decZ > 0.5){_blinky->setPosition(Ogre::Vector3(_blinky->getPosition().x, 0,_blinky->getPosition().z-decZ+1));}
+      else if(decZ < -0.5){_blinky->setPosition(Ogre::Vector3(_blinky->getPosition().x, 0,_blinky->getPosition().z-decZ-1));}
     }
   }
   _blinky->translate(_blinkyMove*_deltaT*_blinkySpeed);
-}
+  }*/
 
 void
 PlayState::nextLevel()
@@ -427,10 +445,10 @@ void
 PlayState::removeLevel()
 {
   _pacman->removeAndDestroyAllChildren();
-  _blinky->removeAndDestroyAllChildren();
+  /*_blinky->removeAndDestroyAllChildren();
   _pinky->removeAndDestroyAllChildren();
   _inky->removeAndDestroyAllChildren();
-  _clyde->removeAndDestroyAllChildren();
+  _clyde->removeAndDestroyAllChildren();*/
   //delete _level;//da error
   _level->getVertexes().clear();
   _level->getEdges().clear();

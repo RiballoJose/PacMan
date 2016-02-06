@@ -96,6 +96,11 @@ Graph::getLinks(GraphVertex* pOrigin)
     if ((*it)->getOrigin()->getData().getZ() == pOrigin->getData().getZ() and
 	(*it)->getOrigin()->getData().getX() == pOrigin->getData().getX()){
       aux.push_back((*it)->getDestination());
+      /*std::cout << "Posible camino añadido: " << "(";
+      std::cout << pOrigin->getData().getZ() << ", ";
+      std::cout << pOrigin->getData().getX() << ")" << "to (";
+      std::cout << (*it)->getDestination()->getData().getZ() << ", ";
+      std::cout << (*it)->getDestination()->getData().getX() << ")" << '\n';*/
     }
   }
   return aux;
@@ -106,6 +111,6 @@ Graph::getMove(GraphVertex* pOrigin, GraphVertex* pDestination)
   Ogre::Vector3 move (0,0,0);
   move.x = ((pDestination->getData().getX() - pOrigin->getData().getX())%2);
   move.z = ((pDestination->getData().getZ() - pOrigin->getData().getZ())%2);
+  //std::cout << "Move.z = " << move.z << "; Move.x = " << move.x << '\n';
   return move;
 }
-  

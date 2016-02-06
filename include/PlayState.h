@@ -32,6 +32,7 @@
 
 #include "GameState.h"
 #include "Graph.h"
+#include "Ghost.h"
 
 class PlayState : public Ogre::Singleton<PlayState>, public GameState
 {
@@ -59,6 +60,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   void createScene();
   void pacmanMove();
   void ghostMove();
+  void ghostMove(Ghost* ghost, int f, int c);
   bool colisionMap(int dir, Ogre::SceneNode* node);
   void destroyAllAttachedMovableObjects(Ogre::SceneNode* node);
   void removeScene();
@@ -85,14 +87,11 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   
   std::vector<Ogre::SceneNode*> _lifes;
   Ogre::SceneNode* _pacman;
-  Ogre::SceneNode* _blinky;//fantasma rojo
+  Ghost* _blinky;//fantasma rojo
   std::pair <double, double> _blinkyStart;//actual
-  std::pair <double, double> _blinkyPosC;//actual
-  std::pair <double, double> _blinkyPosP;//anterior
-  int _blinkyDir;
-  Ogre::SceneNode* _pinky;//rosa
-  Ogre::SceneNode* _inky;//azul cian
-  Ogre::SceneNode* _clyde;//naranja
+  Ghost* _pinky;//rosa
+  Ghost* _inky;//azul cian
+  Ghost* _clyde;//naranja
   std::vector<int>* _wallRows;
   std::vector<int>* _wallCols;
   
