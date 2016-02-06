@@ -53,7 +53,7 @@ void
 PauseState::keyPressed
 (const OIS::KeyEvent &e) {
   // Tecla p --> Estado anterior.
-  if (e.key == OIS::KC_P) {
+  if (e.key == OIS::KC_SPACE or e.key==OIS::KC_P) {
     popState();
   }
 }

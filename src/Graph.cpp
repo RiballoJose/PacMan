@@ -87,7 +87,8 @@ Graph::getVertex
   return NULL;
 }
 
-std::vector<GraphVertex*> Graph::getLinks(GraphVertex* pOrigin)
+std::vector<GraphVertex*>
+Graph::getLinks(GraphVertex* pOrigin)
 {
   std::vector<GraphVertex*> aux;
   std::vector<GraphEdge*>::const_iterator it;
@@ -99,3 +100,12 @@ std::vector<GraphVertex*> Graph::getLinks(GraphVertex* pOrigin)
   }
   return aux;
 }
+Ogre::Vector3
+Graph::getMove(GraphVertex* pOrigin, GraphVertex* pDestination)
+{
+  Ogre::Vector3 move (0,0,0);
+  move.x = ((pDestination->getData().getX() - pOrigin->getData().getX())%2);
+  move.z = ((pDestination->getData().getZ() - pOrigin->getData().getZ())%2);
+  return move;
+}
+  

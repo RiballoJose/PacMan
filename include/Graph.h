@@ -31,6 +31,7 @@ class Graph
   std::vector<GraphEdge*> getEdges () const { return _edges; }
 
   std::vector<GraphVertex*> getLinks(GraphVertex* pOrigin);
+  Ogre::Vector3 getMove(GraphVertex* pOrigin, GraphVertex* pDestination);
 
  private:
   std::vector<GraphVertex*> _vertexes;

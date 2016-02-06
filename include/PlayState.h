@@ -77,7 +77,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
     _currentLevel, _perspective, _nwalls, _nPacDots, _score;
   double _pacSpeed, _blinkySpeed, _startRow, _currentRow, _startCol,
     _currentCol, _prevRow, _prevCol;
-  bool _exitGame,  _endLevel, _pacmanDef, _isblinkyMoving;
+  bool _exitGame,  _endLevel, _pacmanDef;
 
   Ogre::Real _deltaT;
   Ogre::Vector3 _pacMove;

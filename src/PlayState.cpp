@@ -31,7 +31,6 @@ PlayState::createOverlay()
   _sceneMgr->addRenderQueueListener(new Ogre::OverlaySystem());
   _overlayManager = Ogre::OverlayManager::getSingletonPtr();
   _ovPlay = _overlayManager->getByName("Play");
-  //std::cout <<"Overlay? " << _ovPlay << '\n';
   if(_ovPlay)
     _ovPlay->show();
 }
@@ -43,7 +42,6 @@ PlayState::createScene()
   std::stringstream bloq, material;
   bloq.str("");
   _pacmanDef = false;
-  _isblinkyMoving = false;
   //Vista aerea
   _perspective = 0;
   _camera->setPosition(Ogre::Vector3(0, 42, 7));
@@ -71,21 +69,12 @@ PlayState::createScene()
   int id = 0;
 
   _level = new Graph;
-  //GraphVertex *v1 = NULL;//scene->getGraph()->getVertex(edge[0]);
-  //GraphVertex *v2 = NULL;//scene->getGraph()->getVertex(edge[1]);
   for(int f = _currentLevel*(31); f < _currentLevel*(31)+31; f++){
     for(int c = 0; c < _columnas; c++){
       bloq.str("");
       switch(_levels[f][c]){
       case 0://vacio
-	bloq << "Void(" << f << "," << c << ")";
-	/*
-	  v1 = _level->getVertex(f,c);
-	  v2 = _level->getVertex(f-1,c);
-	if(v2){_level->addEdge(v1,v2);std::cout << "Edge added1" << '\n';}
-	v2 = _level->getVertex(f, c-1);
-	if(v2){_level->addEdge(v1,v2);std::cout << "Edge added2" << '\n';}*/
-	
+	bloq << "Void(" << f << "," << c << ")";	
 	break;
       case 1://muros
 	bloq << "Wall(" << f << "," << c << ")";
@@ -384,22 +373,44 @@ PlayState::ghostMove()
 {
   std::vector<GraphVertex*>vertexes;
   GraphVertex* vert;
-  double intpart;
-  //double dirX = 0.0;
-  //double dirZ = 0.0;
-  //_blinkyMove.x = 0; _blinkyMove.z = 0;
-  //std::cout << _deltaT << '\n';
-  //std::cout << _blinkyStart.first+(int)_blinky->getPosition().z -2 << ", " << _blinkyStart.second+(int)_blinky->getPosition().x+2 << '\n';
-  if(modf(_blinky->getPosition().z, &intpart) <_deltaT and modf(_blinky->getPosition().x, &intpart) <_deltaT and
-     (vert = _level->getVertex(_blinkyStart.first+_blinky->getPosition().z -2, _blinkyStart.second+_blinky->getPosition().x+2))!=NULL){
+  double intX, intZ;
+  double decX = (std::modf(_blinky->getPosition().x, &intX));
+  double decZ = (std::modf(_blinky->getPosition().z, &intZ));
+  
+  std::cout << "posX =" << _blinky->getPosition().x << ", posZ =" << _blinky->getPosition().z << '\n';
+  std::cout << "intX =" << intX << ", intZ =" << intZ << '\n' ;
+  std::cout << "decX =" << decX << ", decZ =" << decZ << '\n' << '\n';
+  
+  if(((std::abs(decZ) <_deltaT) or (std::abs(decZ) >1-_deltaT)) and
+     ((std::abs(decX) <_deltaT) or (std::abs(decX) >1-_deltaT)) and
+     (vert = _level->getVertex(_blinkyStart.first+_blinky->getPosition().z-2,
+			       _blinkyStart.second+_blinky->getPosition().x+2))!=NULL){
     vertexes = _level->getLinks(vert);
     _blinkyDir = rand()%vertexes.size();
-    _blinkyMove.x = vertexes.at(_blinkyDir)->getData().getX()-(_blinkyStart.second+(int)(_blinky->getPosition().x) +2);
-    _blinkyMove.z = vertexes.at(_blinkyDir)->getData().getZ()-(_blinkyStart.first+(int)(_blinky->getPosition().z) -2);
-    //_blinky->setPosition(_blinky->getPosition()+_blinkyMove);
-    //std::cout << _blinkyMove.z << "," << _blinkyMove.x << '\n';
+    _blinkyMove = _level->getMove(vert, vertexes.at(_blinkyDir));
+    std::cout << "movX =" << _blinkyMove.x << ", movZ =" << _blinkyMove.z << '\n'<< '\n';
+    if(_blinkyMove.x==0){
+      if(std::abs(decX) > 0 and std::abs(decX)<0.5){
+	std::cout << "1" << '\n';
+	_blinky->setPosition(Ogre::Vector3(_blinky->getPosition().x-decX, 0, 2));
+      }
+      else if(std::abs(decX) >0.5){
+	std::cout << "2" << '\n';
+	_blinky->setPosition(Ogre::Vector3(_blinky->getPosition().x-decX, 0, 2));
+      }
+    }
+    else if(_blinkyMove.z==0){
+      if(std::abs(decZ) > 0 and std::abs(decZ)<0.5){
+	std::cout << "3" << '\n';
+	_blinky->setPosition(Ogre::Vector3(-1, 0,_blinky->getPosition().z-decZ));
+      }
+      else if(std::abs(decZ) > 0.5){
+	std::cout << "4" << '\n';
+	_blinky->setPosition(Ogre::Vector3(-1, 0,_blinky->getPosition().z-decZ));
+      }
+    }
   }
-  _blinky->translate(_blinkyMove);
+  _blinky->translate(_blinkyMove*_deltaT*_blinkySpeed);
 }
 
 void
