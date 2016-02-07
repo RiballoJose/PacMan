@@ -9,6 +9,12 @@ PlayState::enter ()
 {
   _root = Ogre::Root::getSingletonPtr();
   _sceneMgr = _root->getSceneManager("SceneManager");
+  _sceneMgr->addRenderQueueListener(new Ogre::OverlaySystem());
+  _overlayManager = Ogre::OverlayManager::getSingletonPtr();
+  //_sceneMgr->addRenderQueueListener( OverlaySystem1 );
+  //Ogre::TextureManager::getSingleton().setDefaultNumMipmaps( 5 );
+  //Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
+  
   _currentLevel = 0;
   _pacSpeed = 2.5;
   _currentDir = _nextDir = _prevDir = _prevCol = _prevRow = 0;
@@ -17,7 +23,7 @@ PlayState::enter ()
   _camera = _sceneMgr->getCamera("IntroCamera");
   _viewport = _root->getAutoCreatedWindow()->addViewport(_camera);
   _light = _sceneMgr->createLight("Light");
-
+  
   LoadLevels();
   createScene();
   createOverlay();
@@ -27,9 +33,15 @@ PlayState::enter ()
 void 
 PlayState::createOverlay()
 {
-  _sceneMgr->addRenderQueueListener(new Ogre::OverlaySystem());
-  _overlayManager = Ogre::OverlayManager::getSingletonPtr();
-  _ovPlay = _overlayManager->getByName("Play");
+  //_ovPlay = _overlayManager->getByName("Info");
+  _ovPlay = _overlayManager->create("Prueba");
+  Ogre::TextAreaOverlayElement* mTextArea = static_cast<Ogre::TextAreaOverlayElement*>(_overlayManager->createOverlayElement("TextArea", "MyElement"));
+  mTextArea->setCharHeight(500);
+  mTextArea->setColour(Ogre::ColourValue(1.0, 1.0, 1.0));
+  mTextArea->setCaption("Hello OGRE!");
+  mTextArea->_setDimensions(1.0,1.0);
+  mTextArea->show();
+  //std::cout <<"Overlay? " << _ovPlay << '\n';
   if(_ovPlay)
     _ovPlay->show();
 }
@@ -111,7 +123,7 @@ PlayState::createScene()
 	  ent = _sceneMgr->createEntity(bloq.str(), "Fantasma.mesh");
 	  ent->setMaterialName("F_rojo_mat");
 	  _blinky = new Ghost(_sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12))),
-			      ent, f-(((f-_currentLevel*31))-12), c-aux, 1.8, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+			      ent, f-(((f-_currentLevel*31))-12), c-aux, 0.8, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  _blinky->getNode()->setScale(1.0, 1.0, 1.0);
 	  _blinky->getNode()->attachObject(ent);
 	  break;
@@ -120,7 +132,7 @@ PlayState::createScene()
 	  ent = _sceneMgr->createEntity(bloq.str(), "Fantasma.mesh");
 	  ent->setMaterialName("F_rosa_mat");
 	  _pinky = new Ghost(_sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12))),
-			     ent, f-(((f-_currentLevel*31))-12), c-aux, 2.0, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+			     ent, f-(((f-_currentLevel*31))-12), c-aux, 1.0, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  _pinky->getNode()->setScale(1.0, 1.0, 1.0);
 	  _pinky->getNode()->attachObject(ent);
 	  break;
@@ -129,7 +141,7 @@ PlayState::createScene()
 	  ent = _sceneMgr->createEntity(bloq.str(), "Fantasma.mesh");
 	  ent->setMaterialName("F_azul_mat");
 	  _inky = new Ghost(_sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12))),
-			    ent, f-(((f-_currentLevel*31))-12), c-aux, 2.0, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+			    ent, f-(((f-_currentLevel*31))-12), c-aux, 1.0, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  _inky->getNode()->setScale(1.0, 1.0, 1.0);
 	  _inky->getNode()->attachObject(ent);
 	  break;
@@ -138,7 +150,7 @@ PlayState::createScene()
 	  ent = _sceneMgr->createEntity(bloq.str(), "Fantasma.mesh");
 	  ent->setMaterialName("F_naranja_mat");
 	  _clyde = new Ghost(_sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12))),
-			     ent, f-(((f-_currentLevel*31))-12), c-aux, 1.5, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+			     ent, f-(((f-_currentLevel*31))-12), c-aux, 1.0, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  _clyde->getNode()->setScale(1.0, 1.0, 1.0);
 	  _clyde->getNode()->attachObject(ent);
 	  break;
@@ -489,19 +501,19 @@ PlayState::ghostMove(Ghost* ghost)
     ghost->setMove(_level->getMove(vert, vertexes.at(rand()%vertexes.size())));
     if(ghost->getMove().x==0){
       if(std::abs(decX) > 0 and std::abs(decX)<0.5)
-	ghost->getNode()->setPosition(Ogre::Vector3(ghost->getNode()->getPosition().x-decX, 0, ghost->getNode()->getPosition().z));
+	ghost->getNode()->setPosition(Ogre::Vector3(ghost->getNode()->getPosition().x-decX, 0.5, ghost->getNode()->getPosition().z));
       else if(decX >0.5)
-	ghost->getNode()->setPosition(Ogre::Vector3(ghost->getNode()->getPosition().x-decX+1, 0, ghost->getNode()->getPosition().z));
+	ghost->getNode()->setPosition(Ogre::Vector3(ghost->getNode()->getPosition().x-decX+1, 0.5, ghost->getNode()->getPosition().z));
       else if(decX <-0.5)
-	ghost->getNode()->setPosition(Ogre::Vector3(ghost->getNode()->getPosition().x-decX-1, 0, ghost->getNode()->getPosition().z));
+	ghost->getNode()->setPosition(Ogre::Vector3(ghost->getNode()->getPosition().x-decX-1, 0.5, ghost->getNode()->getPosition().z));
     }
     else if(ghost->getMove().z==0){
       if(std::abs(decZ) > 0 and std::abs(decZ)<0.5)
-	ghost->getNode()->setPosition(Ogre::Vector3(ghost->getNode()->getPosition().x, 0,ghost->getNode()->getPosition().z-decZ));
+	ghost->getNode()->setPosition(Ogre::Vector3(ghost->getNode()->getPosition().x, 0.5,ghost->getNode()->getPosition().z-decZ));
       else if(decZ > 0.5)
-	ghost->getNode()->setPosition(Ogre::Vector3(ghost->getNode()->getPosition().x, 0,ghost->getNode()->getPosition().z-decZ+1));
+	ghost->getNode()->setPosition(Ogre::Vector3(ghost->getNode()->getPosition().x, 0.5,ghost->getNode()->getPosition().z-decZ+1));
       else if(decZ < -0.5)
-	ghost->getNode()->setPosition(Ogre::Vector3(ghost->getNode()->getPosition().x, 0,ghost->getNode()->getPosition().z-decZ-1));
+	ghost->getNode()->setPosition(Ogre::Vector3(ghost->getNode()->getPosition().x, 0.5,ghost->getNode()->getPosition().z-decZ-1));
     }
   }
   ghost->getNode()->translate(ghost->getMove()*_deltaT*ghost->getSpeed());

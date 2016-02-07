@@ -24,6 +24,10 @@
 #include <stack>
 #include <Ogre.h>
 #include <OgreSingleton.h>
+#include <OgreOverlaySystem.h>
+#include <OgreOverlayElement.h>
+#include <OgreTextAreaOverlayElement.h>
+#include <OgreOverlayManager.h>
 #include <OIS/OIS.h>
 
 #include "InputManager.h"

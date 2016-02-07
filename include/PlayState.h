@@ -23,11 +23,6 @@
 
 #include <Ogre.h>
 #include <OIS/OIS.h>
-#include <OgreOverlay.h>
-#include <OgreOverlaySystem.h>
-#include <OgreOverlayManager.h>
-#include <OgreOverlayElement.h>
-#include <OgreOverlayContainer.h>
 #include <cstdlib>
 
 #include "GameState.h"
@@ -95,6 +90,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   Ogre::SceneNode* _pacman;
   Ogre::Vector3 _startPos;
   Ghost* _blinky;//fantasma rojo
+
   Ghost* _pinky;//rosa
   Ghost* _inky;//azul cian
   Ghost* _clyde;//naranja
