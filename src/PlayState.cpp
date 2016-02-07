@@ -10,7 +10,7 @@ PlayState::enter ()
   _root = Ogre::Root::getSingletonPtr();
   _sceneMgr = _root->getSceneManager("SceneManager");
   _currentLevel = 0;
-  _pacSpeed = 3;
+  _pacSpeed = 2.5;
   _currentDir = _nextDir = _prevDir = _prevCol = _prevRow = 0;
   _nPacDots = _score = 0;
   _canEat = false;
@@ -111,7 +111,7 @@ PlayState::createScene()
 	  ent = _sceneMgr->createEntity(bloq.str(), "Fantasma.mesh");
 	  ent->setMaterialName("F_rojo_mat");
 	  _blinky = new Ghost(_sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12))),
-			      ent, f-(((f-_currentLevel*31))-12), c-aux, 1.0, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+			      ent, f-(((f-_currentLevel*31))-12), c-aux, 1.8, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  _blinky->getNode()->setScale(1.0, 1.0, 1.0);
 	  _blinky->getNode()->attachObject(ent);
 	  break;
@@ -120,7 +120,7 @@ PlayState::createScene()
 	  ent = _sceneMgr->createEntity(bloq.str(), "Fantasma.mesh");
 	  ent->setMaterialName("F_rosa_mat");
 	  _pinky = new Ghost(_sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12))),
-			     ent, f-(((f-_currentLevel*31))-12), c-aux, 1.0, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+			     ent, f-(((f-_currentLevel*31))-12), c-aux, 2.0, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  _pinky->getNode()->setScale(1.0, 1.0, 1.0);
 	  _pinky->getNode()->attachObject(ent);
 	  break;
@@ -129,7 +129,7 @@ PlayState::createScene()
 	  ent = _sceneMgr->createEntity(bloq.str(), "Fantasma.mesh");
 	  ent->setMaterialName("F_azul_mat");
 	  _inky = new Ghost(_sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12))),
-			    ent, f-(((f-_currentLevel*31))-12), c-aux, 1.0, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+			    ent, f-(((f-_currentLevel*31))-12), c-aux, 2.0, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  _inky->getNode()->setScale(1.0, 1.0, 1.0);
 	  _inky->getNode()->attachObject(ent);
 	  break;
@@ -138,7 +138,7 @@ PlayState::createScene()
 	  ent = _sceneMgr->createEntity(bloq.str(), "Fantasma.mesh");
 	  ent->setMaterialName("F_naranja_mat");
 	  _clyde = new Ghost(_sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12))),
-			     ent, f-(((f-_currentLevel*31))-12), c-aux, 1.0, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+			     ent, f-(((f-_currentLevel*31))-12), c-aux, 1.5, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  _clyde->getNode()->setScale(1.0, 1.0, 1.0);
 	  _clyde->getNode()->attachObject(ent);
 	  break;
@@ -153,7 +153,7 @@ PlayState::createScene()
 	  bloq << "Pacman";
 	  _pacman = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  ent = _sceneMgr->createEntity(bloq.str(), "Pacman.mesh");
-	  //_pacman->setScale(0.15, 0.5, 0.75);
+	  _pacman->setScale(0.8, 0.8, 0.8);
 	  _pacman->translate(0.5,0,0.0);
 	  _pacman->attachObject(ent);
 	  _startPos = _pacman->getPosition();
@@ -335,7 +335,7 @@ PlayState::pacmanMove()
     _pacman->translate(_pacMove*_deltaT*_pacSpeed);
     _currentRow = (int)(_pacman->getPosition().z+_startRow+0.5);
     _currentCol = (int)(_pacman->getPosition().x+_startCol);
-    if(_pacSpeed>3){_pacSpeed-=0.0015;}
+    if(_pacSpeed>2.5){_pacSpeed-=0.0015;}
     else{_canEat = false;eating();}
     if (_levels[(int)_currentRow][(int)_currentCol]==2){
       Ogre::SceneNode* nodo = NULL;
@@ -350,6 +350,7 @@ PlayState::pacmanMove()
 	  _sceneMgr->destroySceneNode(nodo);
 	  _nPacDots--;
 	  _score += 10;
+	  _blinky->setSpeed(_blinky->getSpeed()+0.005);
 	}
 	if(_nPacDots<1){_endLevel = true;}
       }
@@ -365,7 +366,7 @@ PlayState::pacmanMove()
 	if(bboxPac.intersects(bboxDot)){//habria que cambiar fantasmas y poder comer
 	  nodo->removeAndDestroyAllChildren();
 	  _sceneMgr->destroySceneNode(nodo);
-	  _pacSpeed = 4;
+	  _pacSpeed = 3.5;
 	  //_endLevel = true;//para probar a pasar de nivel rapido
 	  _canEat = true;
 	  eating();
