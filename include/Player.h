@@ -3,14 +3,16 @@
 
 class Player{
 public:
-  Player(int vida);
+  Player(int vida, int punt);
   ~Player();
-  void crearPlayer(int vida);
   int getVida();
   void setVida(int v);
+  int getPunt();
+  int setPunt(int p);
 
  
 private:
-  int _vida; 
+  int _vida;
+  int _punt;
 };
 #endif

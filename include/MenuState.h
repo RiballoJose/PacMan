@@ -52,10 +52,6 @@ class MenuState : public Ogre::Singleton<MenuState>, public GameState
   Ogre::Viewport* _viewport;
   Ogre::Camera* _camera;
 
-  
-
-  Ogre::AnimationState* _anim;
-  Ogre::AnimationState* _animRotar;
 
  private:
 
