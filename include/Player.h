@@ -8,7 +8,7 @@ public:
   int getVida();
   void setVida(int v);
   int getPunt();
-  int setPunt(int p);
+  void setPunt(int p);
 
  
 private:
