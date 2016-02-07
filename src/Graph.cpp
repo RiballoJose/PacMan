@@ -63,9 +63,7 @@ Graph::adjacents
   std::vector<GraphVertex*> result;
   std::vector<GraphVertex*>::const_iterator it;
 
-  for (it = _vertexes.begin();
-       it != _vertexes.end();
-       ++it)
+  for (it = _vertexes.begin(); it != _vertexes.end(); ++it)
     if ((*it)->getData().getZ() == z and (*it)->getData().getX() == x) 
       return (*it)->adjacents();
 
@@ -114,3 +112,8 @@ Graph::getMove(GraphVertex* pOrigin, GraphVertex* pDestination)
   //std::cout << "Move.z = " << move.z << "; Move.x = " << move.x << '\n';
   return move;
 }
+/*GraphVertex*
+Graph::nextStep(GraphVertex*pOrigin, GraphVertex*pDestination)
+{
+  
+}*/

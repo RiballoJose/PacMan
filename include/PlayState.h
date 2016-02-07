@@ -59,13 +59,19 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   void removeLevel();
   void createScene();
   void pacmanMove();
-  void ghostMove();
-  void ghostMove(Ghost* ghost, int f, int c);
+  void ghostMove(Ghost* ghost);
   bool colisionMap(int dir, Ogre::SceneNode* node);
+  bool died();
+  bool pinkyHit();
+  bool inkyHit();
+  bool blinkyHit();
+  bool clydeHit();
+  void resetGhost(Ghost* ghost);
   void destroyAllAttachedMovableObjects(Ogre::SceneNode* node);
   void removeScene();
   void createOverlay();
   void calculateAdjs();
+  void eating();
 
  protected:
   Ogre::Root* _root;
@@ -77,18 +83,17 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   int** _levels;
   int _hits, _filas, _columnas, _currentDir, _nextDir, _prevDir,
     _currentLevel, _perspective, _nwalls, _nPacDots, _score;
-  double _pacSpeed, _blinkySpeed, _startRow, _currentRow, _startCol,
+  double _pacSpeed, _startRow, _currentRow, _startCol,
     _currentCol, _prevRow, _prevCol;
-  bool _exitGame,  _endLevel, _pacmanDef;
+  bool _exitGame,  _endLevel, _pacmanDef, _canEat;
 
   Ogre::Real _deltaT;
   Ogre::Vector3 _pacMove;
-  Ogre::Vector3 _blinkyMove;
   
   std::vector<Ogre::SceneNode*> _lifes;
   Ogre::SceneNode* _pacman;
+  Ogre::Vector3 _startPos;
   Ghost* _blinky;//fantasma rojo
-  std::pair <double, double> _blinkyStart;//actual
   Ghost* _pinky;//rosa
   Ghost* _inky;//azul cian
   Ghost* _clyde;//naranja
