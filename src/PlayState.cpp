@@ -395,15 +395,19 @@ PlayState::eating()
   Ogre::Entity* pieza;
   if(_canEat){
     pieza = static_cast<Ogre::Entity*>(_blinky->getNode()->getAttachedObject(0));
-    pieza->setMaterialName("F_azul_mat");
+    pieza->setMaterialName("F_comer_mat");
+    pieza = static_cast<Ogre::Entity*>(_inky->getNode()->getAttachedObject(0));
+    pieza->setMaterialName("F_comer_mat");
     pieza = static_cast<Ogre::Entity*>(_pinky->getNode()->getAttachedObject(0));
-    pieza->setMaterialName("F_azul_mat");
+    pieza->setMaterialName("F_comer_mat");
     pieza = static_cast<Ogre::Entity*>(_clyde->getNode()->getAttachedObject(0));
-    pieza->setMaterialName("F_azul_mat");
+    pieza->setMaterialName("F_comer_mat");
   }
   else{
     pieza = static_cast<Ogre::Entity*>(_blinky->getNode()->getAttachedObject(0));
     pieza->setMaterialName("F_rojo_mat");
+    pieza = static_cast<Ogre::Entity*>(_inky->getNode()->getAttachedObject(0));
+    pieza->setMaterialName("F_azul_mat");
     pieza = static_cast<Ogre::Entity*>(_pinky->getNode()->getAttachedObject(0));
     pieza->setMaterialName("F_rosa_mat");
     pieza = static_cast<Ogre::Entity*>(_clyde->getNode()->getAttachedObject(0));
