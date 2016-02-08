@@ -52,8 +52,9 @@ void EndState::exit (){
 
   delete [] _punteros;
 
+  std::cout << "Punteros eliminados" << std::endl;
   _name[0] = 'A'; _name[1] = 'A'; _name[2] = 'A';
-  RecordManager::getSingletonPtr()->addRecord(*_rec);
+  //RecordManager::getSingletonPtr()->addRecord(*_rec);
 }
 
 void EndState::pause (){}
@@ -70,6 +71,7 @@ bool EndState::frameStarted(const Ogre::FrameEvent& evt){
 bool EndState::frameEnded(const Ogre::FrameEvent& evt){  
   if(_endGame){
     std::cout << "Cambiando de estado" << std::endl;
+    //changeState(MenuState::getSingletonPtr());
     popState();
   }
   
@@ -116,7 +118,7 @@ void EndState::keyPressed(const OIS::KeyEvent &e){
       _name[_pos] = aux;
     }
     break;
-  case OIS::KC_SPACE:
+  case OIS::KC_SPACE or OIS::KC_RETURN or OIS::KC_ESCAPE:
     std::cout << "Pulsando espacio" << std::endl;
     _endGame = true;
     break;

@@ -284,7 +284,7 @@ PlayState::pause()
 void
 PlayState::resume()
 {
-  _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 0.0));
+  //_viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 0.0));
   if(_exitGame){changeState(MenuState::getSingletonPtr());}
 }
 
