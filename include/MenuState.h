@@ -52,6 +52,10 @@ class MenuState : public Ogre::Singleton<MenuState>, public GameState
   Ogre::Viewport* _viewport;
   Ogre::Camera* _camera;
 
+  Ogre::OverlayManager* _overlayManager;
+  Ogre::Overlay *_ovCreditos;
+
+
 
  private:
 
@@ -61,6 +65,7 @@ class MenuState : public Ogre::Singleton<MenuState>, public GameState
   Ogre::SceneNode** _opciones;
 
   void createScene();
+  void createOverlay();
   bool _exitGame, _op;
 };
 

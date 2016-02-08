@@ -9,9 +9,10 @@ void
 MenuState::enter ()
 {
   _root = Ogre::Root::getSingletonPtr();
-
-
   _sceneMgr = _root->getSceneManager("SceneManager");
+
+  _sceneMgr->addRenderQueueListener(GameManager::getSingletonPtr()->getOverlaySystem());
+  _overlayManager = Ogre::OverlayManager::getSingletonPtr();
 
   _camera = _sceneMgr->getCamera("IntroCamera");
 
@@ -19,6 +20,7 @@ MenuState::enter ()
   _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 0.0));
 
   createScene();
+  createOverlay();
   _exitGame = false; _op=false;
 }
 void
@@ -101,6 +103,14 @@ MenuState::createScene()
   light->setDiffuseColour(0.9, 0.9, 0.9);
 }//Fin createScene
 
+void 
+MenuState::createOverlay()
+{
+  _ovCreditos = _overlayManager->getByName("Creditos");
+  if(_ovCreditos)
+    _ovCreditos->show();
+}
+
 bool
 MenuState::frameStarted
 (const Ogre::FrameEvent& evt) 
@@ -136,6 +146,7 @@ MenuState::keyPressed
   case OIS::KC_RETURN:
     switch(_sel){
     case 0:
+      _ovCreditos->hide();
       changeState(PlayState::getSingletonPtr());
       break;
     case 1:

@@ -29,7 +29,7 @@
 #include "EndState.h"
 #include "Graph.h"
 #include "Ghost.h"
-#include "Player.h"
+
 
 class PlayState : public Ogre::Singleton<PlayState>, public GameState
 {
@@ -105,7 +105,6 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
 
   Graph* _level;
 
-  Player* player;
   
 };
 
