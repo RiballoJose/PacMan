@@ -94,9 +94,7 @@ void
 IntroState::keyPressed
 (const OIS::KeyEvent &e)
 {
-  // Transición al siguiente estado.
-  // Espacio --> PlayState
-  if (e.key == OIS::KC_RETURN or e.key == OIS::KC_SPACE) {
+  if (e.key == OIS::KC_RETURN) {
     changeState(MenuState::getSingletonPtr());
   }
 }
