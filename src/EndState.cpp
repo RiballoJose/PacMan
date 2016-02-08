@@ -43,8 +43,8 @@ void EndState::createOverlay(){
 }
 
 void EndState::exit (){
-  //_principal->hide();
-  //_punteros[_pos]->hide();
+  _principal->hide();
+  _punteros[_pos]->hide();
   _rec->setPunt(Ogre::StringConverter::parseInt(_score));
   _rec->setPlayer(Ogre::String(_name));
 
@@ -54,7 +54,7 @@ void EndState::exit (){
 
   std::cout << "Punteros eliminados" << std::endl;
   _name[0] = 'A'; _name[1] = 'A'; _name[2] = 'A';
-  //RecordManager::getSingletonPtr()->addRecord(*_rec);
+  RecordManager::getSingletonPtr()->addRecord(*_rec);
 }
 
 void EndState::pause (){}
@@ -70,8 +70,8 @@ bool EndState::frameStarted(const Ogre::FrameEvent& evt){
 
 bool EndState::frameEnded(const Ogre::FrameEvent& evt){  
   if(_endGame){
+
     std::cout << "Cambiando de estado" << std::endl;
-    //changeState(MenuState::getSingletonPtr());
     popState();
   }
   
