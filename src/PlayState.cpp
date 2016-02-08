@@ -271,6 +271,8 @@ PlayState::exit ()
     delete [] _levels[i];
   }
   delete [] _levels;
+
+  _ovJuego->hide();
   
   _sceneMgr->clearScene();
   _root->getAutoCreatedWindow()->removeAllViewports();
