@@ -78,13 +78,13 @@ RecordManager::addRecord(Record rec)
 	rec.setPos(i);
 	_records[i] = rec;
 				
-	if(i < MAX_RECORDS){
+	if(i < 10){
 	  aux.setPos(i + 1);
 	  _records[(i + 1)] = aux;
 	}
       }
       else {
-	if((i + 1) > size && (i + 1) <= MAX_RECORDS){
+	if((i + 1) > size && (i + 1) <= 10){
 	  rec.setPos(i + 1);
 	  _records[(i + 1)] = rec;
 	}
@@ -97,6 +97,7 @@ RecordManager::addRecord(Record rec)
 Ogre::String
 RecordManager::toString()
 {
+  loadRecords();
   std::stringstream aux;
   for (std::map<int, Record>::iterator it = _records.begin(); 
        it != _records.end(); ++it){
