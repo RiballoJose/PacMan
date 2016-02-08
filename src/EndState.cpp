@@ -48,6 +48,8 @@ void EndState::exit (){
   _rec->setPunt(Ogre::StringConverter::parseInt(_score));
   _rec->setPlayer(Ogre::String(_name));
 
+  std::cout << "Guardando record" << std::endl;
+
   delete [] _punteros;
 
   _name[0] = 'A'; _name[1] = 'A'; _name[2] = 'A';
@@ -67,6 +69,7 @@ bool EndState::frameStarted(const Ogre::FrameEvent& evt){
 
 bool EndState::frameEnded(const Ogre::FrameEvent& evt){  
   if(_endGame){
+    std::cout << "Cambiando de estado" << std::endl;
     popState();
   }
   
@@ -114,6 +117,7 @@ void EndState::keyPressed(const OIS::KeyEvent &e){
     }
     break;
   case OIS::KC_SPACE:
+    std::cout << "Pulsando espacio" << std::endl;
     _endGame = true;
     break;
   default:

@@ -182,7 +182,8 @@ MenuState::keyPressed
       if(_ovCreditos->isVisible()){
         _ovCreditos->hide();
       } else {
-	_ovRecords->hide();
+        if(_ovRecords->isVisible())
+	     _ovRecords->hide();
       }
     }
     break;
