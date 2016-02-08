@@ -98,10 +98,9 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   std::vector<int>* _wallRows;
   std::vector<int>* _wallCols;
   
-  Ogre::OverlayContainer* _panel;
   Ogre::OverlayManager* _overlayManager;
-  Ogre::Overlay *_ovPlay;
-  Ogre::OverlayElement *_o_score;
+  Ogre::Overlay *_ovJuego;
+  Ogre::OverlayElement *_ovPunt, *_ovVida, *_ovScore;
 
   Graph* _level;
 

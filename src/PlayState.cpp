@@ -30,9 +30,13 @@ PlayState::enter ()
 void 
 PlayState::createOverlay()
 {
-  _ovPlay = _overlayManager->getByName("Info");
-  if(_ovPlay)
-    _ovPlay->show();
+  _ovJuego = _overlayManager->getByName("Juego");
+  _ovPunt = _overlayManager->getOverlayElement("Puntuacion");
+  _ovVida = _overlayManager->getOverlayElement("Vida");
+  _ovScore = _overlayManager->getOverlayElement("Puntos");
+  _ovVida->setCaption("Vidas");
+  _ovPunt->setCaption("Puntos");
+  _ovJuego->show();
 }
 void
 PlayState::createScene()
@@ -286,6 +290,7 @@ PlayState::frameStarted
 {
   _pacMove.x = 0; _pacMove.y = 0; _pacMove.z = 0;
   _deltaT = evt.timeSinceLastFrame;
+  _ovScore->setCaption(Ogre::StringConverter::toString(_score));
   if(!_exitGame and !_endLevel){
     /*if(_perspective==2){
       _camera->setPosition(_pacman->getPosition()+Ogre::Vector3(0,0,0));
