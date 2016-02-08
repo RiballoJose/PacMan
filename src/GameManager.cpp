@@ -27,7 +27,7 @@ GameManager::start
 {
   // Creación del objeto Ogre::Root.
   _root = new Ogre::Root();
-  
+  _overlaySystem = new Ogre::OverlaySystem();
   loadResources();
 
   if (!configure())
@@ -124,7 +124,7 @@ GameManager::configure ()
     }
   }
   
-  _renderWindow = _root->initialise(true, "Game State Example");
+  _renderWindow = _root->initialise(true, "Pac-Man");
   
   Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
   

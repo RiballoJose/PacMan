@@ -26,6 +26,7 @@
 #include <cstdlib>
 
 #include "GameState.h"
+#include "EndState.h"
 #include "Graph.h"
 #include "Ghost.h"
 #include "Player.h"

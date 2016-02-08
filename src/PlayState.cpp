@@ -9,11 +9,8 @@ PlayState::enter ()
 {
   _root = Ogre::Root::getSingletonPtr();
   _sceneMgr = _root->getSceneManager("SceneManager");
-  _sceneMgr->addRenderQueueListener(new Ogre::OverlaySystem());
+  _sceneMgr->addRenderQueueListener(GameManager::getSingletonPtr()->getOverlaySystem());
   _overlayManager = Ogre::OverlayManager::getSingletonPtr();
-  //_sceneMgr->addRenderQueueListener( OverlaySystem1 );
-  //Ogre::TextureManager::getSingleton().setDefaultNumMipmaps( 5 );
-  //Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();
   
   _currentLevel = 0;
   _pacSpeed = 2.5;
@@ -33,15 +30,7 @@ PlayState::enter ()
 void 
 PlayState::createOverlay()
 {
-  //_ovPlay = _overlayManager->getByName("Info");
-  _ovPlay = _overlayManager->create("Prueba");
-  Ogre::TextAreaOverlayElement* mTextArea = static_cast<Ogre::TextAreaOverlayElement*>(_overlayManager->createOverlayElement("TextArea", "MyElement"));
-  mTextArea->setCharHeight(500);
-  mTextArea->setColour(Ogre::ColourValue(1.0, 1.0, 1.0));
-  mTextArea->setCaption("Hello OGRE!");
-  mTextArea->_setDimensions(1.0,1.0);
-  mTextArea->show();
-  //std::cout <<"Overlay? " << _ovPlay << '\n';
+  _ovPlay = _overlayManager->getByName("Info");
   if(_ovPlay)
     _ovPlay->show();
 }
@@ -288,7 +277,7 @@ void
 PlayState::resume()
 {
   _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 0.0));
-  if(_exitGame){popState();/*changeState(MenuState::getSingletonPtr())*/};
+  //if(_exitGame){popState();/*changeState(MenuState::getSingletonPtr())*/};
 }
 
 bool
@@ -614,8 +603,11 @@ bool
 PlayState::frameEnded
 (const Ogre::FrameEvent& evt)
 {
-  if (_exitGame)
-    return false;
+  if (_exitGame){
+    EndState::getSingletonPtr()->addScore(_score);
+    pushState(EndState::getSingletonPtr());
+    //return false;
+  }
 
   if(_currentRow != _prevRow){_hits = 0;_prevRow = _currentRow;_prevDir = 0;}
   if(_currentCol != _prevCol){_hits = 0;_prevCol = _currentCol;_prevDir = 0;}
