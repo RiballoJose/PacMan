@@ -31,11 +31,9 @@ PlayState::enter ()
 void 
 PlayState::createOverlay()
 {
-<<<<<<< HEAD
   /*_ovPlay = _overlayManager->getByName("Info");
   if(_ovPlay)
   _ovPlay->show();*/
-=======
   _ovJuego = _overlayManager->getByName("Juego");
   _ovPunt = _overlayManager->getOverlayElement("Puntuacion");
   _ovVida = _overlayManager->getOverlayElement("Vida");
@@ -43,7 +41,6 @@ PlayState::createOverlay()
   _ovVida->setCaption("Vidas");
   _ovPunt->setCaption("Puntos");
   _ovJuego->show();
->>>>>>> 18e2c2ec91ea87776f06af9e96d2b6393cd46cd0
 }
 void
 PlayState::createScene()
