@@ -118,7 +118,7 @@ void EndState::keyPressed(const OIS::KeyEvent &e){
       _name[_pos] = aux;
     }
     break;
-  case OIS::KC_SPACE or OIS::KC_RETURN or OIS::KC_ESCAPE:
+  case OIS::KC_SPACE:
     std::cout << "Pulsando espacio" << std::endl;
     _endGame = true;
     break;

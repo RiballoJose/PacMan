@@ -12,7 +12,7 @@ PauseState::enter ()
   _camera = _sceneMgr->getCamera("IntroCamera");
   _viewport = _root->getAutoCreatedWindow()->getViewport(0);
   // Nuevo background colour.
-  _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 1.0, 0.0));
+  //_viewport->setBackgroundColour(Ogre::ColourValue(0.0, 1.0, 0.0));
 
   _exitGame = false;
 }
