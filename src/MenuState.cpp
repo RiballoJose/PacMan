@@ -8,7 +8,6 @@ template<> MenuState* Ogre::Singleton<MenuState>::msSingleton = 0;
 void
 MenuState::enter ()
 {
-  std::cout << "Soy MenuState" << std::endl;
   _root = Ogre::Root::getSingletonPtr();
   _sceneMgr = _root->getSceneManager("SceneManager");
 
@@ -20,11 +19,8 @@ MenuState::enter ()
   _viewport = _root->getAutoCreatedWindow()->addViewport(_camera);
   _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 0.0));
 
-  std::cout << "Antes de crear escena" << std::endl;
   createScene();
-  std::cout << "Escena creada" << std::endl;
   createOverlay();
-  std::cout << "Overlay Creado" << std::endl;
   _exitGame = false; _op=false;
 }
 void
@@ -42,7 +38,6 @@ MenuState::pause ()
 void
 MenuState::resume ()
 {
-  std::cout << "en resume de menu" << std::endl;
 }
 
 void
@@ -98,7 +93,6 @@ bool
 MenuState::frameStarted
 (const Ogre::FrameEvent& evt) 
 {
-  std::cout << "Soy un frame" << std::endl;
   if(_ovRecords->isVisible()){
     showRecords();
   }
