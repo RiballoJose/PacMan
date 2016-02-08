@@ -38,7 +38,6 @@ MenuState::pause ()
 void
 MenuState::resume ()
 {
-  std::cout << "en resume de menu" << std::endl;
 }
 
 void
