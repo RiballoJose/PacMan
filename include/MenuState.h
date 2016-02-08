@@ -66,6 +66,7 @@ class MenuState : public Ogre::Singleton<MenuState>, public GameState
 
   void createScene();
   void createOverlay();
+  void menuActions();
   bool _exitGame, _op;
 };
 

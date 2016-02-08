@@ -107,8 +107,6 @@ void
 MenuState::createOverlay()
 {
   _ovCreditos = _overlayManager->getByName("Creditos");
-  if(_ovCreditos)
-    _ovCreditos->show();
 }
 
 bool
@@ -128,6 +126,25 @@ MenuState::frameEnded
   return true;
 }
 
+void MenuState::menuActions(){
+    switch(_sel){
+        case 0:
+            changeState(PlayState::getSingletonPtr());
+            break;
+        case 1:
+            _op = true;
+            //_ovRecords->show();
+            break;
+        case 2:
+            _op = true;
+            _ovCreditos->show();
+            break;
+        case 3:
+            _exitGame = true;
+        break;
+    }//Fin switch
+}//Fin menuActions
+
 void
 MenuState::keyPressed
 (const OIS::KeyEvent &e)
@@ -144,18 +161,9 @@ MenuState::keyPressed
   switch(e.key){
       
   case OIS::KC_RETURN:
-    switch(_sel){
-    case 0:
-      _ovCreditos->hide();
-      changeState(PlayState::getSingletonPtr());
-      break;
-    case 1:
-      break;
-    case 2:
-      break;
-    case 3:
-      _exitGame = true;
-    }
+   if(!_op){
+      menuActions();
+    }//Fin if
     break;
   case OIS::KC_UP:
     if(!_op){
@@ -181,20 +189,20 @@ MenuState::keyPressed
     }//Fin if
     break;
   case OIS::KC_SPACE:
-    switch(_sel){
-    case 0:
-      changeState(PlayState::getSingletonPtr());
-      break;
-    case 1:
-      break;
-    case 2:
-      break;
-    case 3:
-      _exitGame = true;
-    }
+    if(!_op){
+      menuActions();
+    }//Fin if
     break;
   case OIS::KC_ESCAPE:
-    _exitGame = true;
+    if(_op){
+      _op = false;
+      if(_ovCreditos->isVisible()){
+        _ovCreditos->hide();
+      } else {
+       // _ovRecords->hide();
+      }//Fin if-else
+    }//Fin if
+    break;
           
   default:
     /* Cualquier otra tecla no hace nada */
@@ -208,9 +216,6 @@ void
 MenuState::keyReleased
 (const OIS::KeyEvent &e )
 {
-  if (e.key == OIS::KC_ESCAPE) {
-    _exitGame = true;
-  }
 }
 MenuState*
 MenuState::getSingletonPtr ()
