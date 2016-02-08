@@ -12,24 +12,23 @@
 #include "Record.h"
 
 class RecordManager: public Ogre::Singleton<RecordManager>{
-public:
-	RecordManager();
-	~RecordManager();
+ public:
+  RecordManager();
+  ~RecordManager();
 
-	void saveRecords();
-	void loadRecords();
+  void saveRecords();
+  void loadRecords();
 	
-	void addRecord(Record rec);
-	Record getRecord(int pos);
+  void addRecord(Record rec);
+  Record getRecord(int pos);
 
-	Ogre::String toString();
-
-	/* Heredados de Ogre::Singleton. */
-    static RecordManager& getSingleton ();
-    static RecordManager* getSingletonPtr ();
-private:
-	std::string _docName;
-	std::map <int, Record> _records;
-};//Fin RecordManager
+  Ogre::String toString();
+	
+  static RecordManager& getSingleton ();
+  static RecordManager* getSingletonPtr ();
+ private:
+  std::string _docName;
+  std::map <int, Record> _records;
+};
 
 #endif

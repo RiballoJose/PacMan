@@ -4,21 +4,21 @@
 #include <Ogre.h>
 
 class Record{
-public:
-	Record();
+ public:
+  Record();
 
-	void setPunt(int sc);
-	void setPos(int pos);
-	void setPlayer(Ogre::String gm);
+  void setPunt(int sc);
+  void setPos(int pos);
+  void setPlayer(Ogre::String gm);
 
-	int getPunt() const;
-	int getPos() const;
-	Ogre::String getPlayer() const;
+  int getPunt() const;
+  int getPos() const;
+  Ogre::String getPlayer() const;
 
-	Ogre::String toString();
-private:
-	Ogre::String _player;
-	int _punt, _pos;
+  Ogre::String toString();
+ private:
+  Ogre::String _player;
+  int _punt, _pos;
 };
 
 #endif

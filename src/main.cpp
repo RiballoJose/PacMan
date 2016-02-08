@@ -21,10 +21,12 @@
 #define UNUSED_VARIABLE(x) (void)x
 
 #include "GameManager.h"
+#include "RecordManager.h"
 #include "IntroState.h"
 #include "MenuState.h"
 #include "PlayState.h"
 #include "PauseState.h"
+#include "EndState.h"
 
 #include <iostream>
 
@@ -33,15 +35,19 @@ using namespace std;
 int main () {
 
   GameManager* game = new GameManager();
+  RecordManager* recordManager = new RecordManager();
   IntroState* introState = new IntroState();
   MenuState* menuState = new MenuState();
   PlayState* playState = new PlayState();
   PauseState* pauseState = new PauseState();
+  EndState* endState = new EndState();
 
+  UNUSED_VARIABLE(recordManager);
   UNUSED_VARIABLE(introState);
   UNUSED_VARIABLE(menuState);
   UNUSED_VARIABLE(playState);
   UNUSED_VARIABLE(pauseState);
+  UNUSED_VARIABLE(endState);
     
   try
     {

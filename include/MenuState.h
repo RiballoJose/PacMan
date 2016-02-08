@@ -25,6 +25,7 @@
 #include <OIS/OIS.h>
 
 #include "GameState.h"
+#include "RecordManager.h"
 
 class MenuState : public Ogre::Singleton<MenuState>, public GameState
 {
@@ -41,8 +42,7 @@ class MenuState : public Ogre::Singleton<MenuState>, public GameState
 
   bool frameStarted (const Ogre::FrameEvent& evt);
   bool frameEnded (const Ogre::FrameEvent& evt);
-
-  // Heredados de Ogre::Singleton.
+  void showRecords ();
   static MenuState& getSingleton ();
   static MenuState* getSingletonPtr ();
 
@@ -63,6 +63,7 @@ class MenuState : public Ogre::Singleton<MenuState>, public GameState
 
   Ogre::SceneNode* _nodo;
   Ogre::SceneNode** _opciones;
+  Ogre::Overlay* _ovRecords;
 
   void createScene();
   void createOverlay();

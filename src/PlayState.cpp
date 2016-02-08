@@ -1,5 +1,6 @@
 #include "PlayState.h"
 #include "PauseState.h"
+#include "MenuState.h"
 template<> PlayState* Ogre::Singleton<PlayState>::msSingleton = 0;
 
 using namespace Ogre::OverlayElementCommands;
@@ -30,9 +31,9 @@ PlayState::enter ()
 void 
 PlayState::createOverlay()
 {
-  _ovPlay = _overlayManager->getByName("Info");
+  /*_ovPlay = _overlayManager->getByName("Info");
   if(_ovPlay)
-    _ovPlay->show();
+  _ovPlay->show();*/
 }
 void
 PlayState::createScene()
@@ -277,7 +278,7 @@ void
 PlayState::resume()
 {
   _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 0.0));
-  //if(_exitGame){popState();/*changeState(MenuState::getSingletonPtr())*/};
+  if(_exitGame){changeState(MenuState::getSingletonPtr());}
 }
 
 bool
@@ -313,7 +314,7 @@ void
 PlayState::pacmanMove()
 {
   if(died() and !_canEat){
-    if(_lifes.size()>0){
+    if(_lifes.size()>1){
       _lifes.back()->removeAndDestroyAllChildren();
       _sceneMgr->destroySceneNode(_lifes.back());
       _lifes.pop_back();
