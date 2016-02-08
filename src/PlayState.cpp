@@ -542,7 +542,7 @@ PlayState::removeLevel()
   _level->getEdges().clear();
   destroyAllAttachedMovableObjects(_sceneMgr->getRootSceneNode());
   _sceneMgr->getRootSceneNode()->removeAndDestroyAllChildren();
-  _score = 0;
+  //_score = 0;
   _endLevel = false;
 }
 void
