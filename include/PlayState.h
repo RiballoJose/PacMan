@@ -58,16 +58,14 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   void pacmanMove();
   void ghostMove(Ghost* ghost);
   bool colisionMap(int dir, Ogre::SceneNode* node);
-  bool died();
-  bool pinkyHit();
-  bool inkyHit();
-  bool blinkyHit();
-  bool clydeHit();
+  void died();
+  bool hit(Ghost* ghost);
   void resetGhost(Ghost* ghost);
   void destroyAllAttachedMovableObjects(Ogre::SceneNode* node);
   void removeScene();
   void createOverlay();
   void calculateAdjs();
+  void canEat(bool b);
   void eating();
 
  protected:

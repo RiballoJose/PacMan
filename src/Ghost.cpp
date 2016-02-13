@@ -8,6 +8,7 @@ Ghost::Ghost(Ogre::SceneNode* node, Ogre::Entity* ent, int startZ, int startX, d
   _start.second = startX;
   _speed = speed;
   _startPos = start;
+  _canEat = false;
 }
 
 Ghost::~Ghost(){
@@ -18,3 +19,4 @@ Ghost::~Ghost(){
 void Ghost::setSpeed(double speed){_speed = speed;}
 void Ghost::setMove(Ogre::Vector3 move){_move = move;}
 void Ghost::setEntity(Ogre::Entity* ent){_ent = ent;}
+void Ghost::setCanEat(bool b){_canEat=b;}

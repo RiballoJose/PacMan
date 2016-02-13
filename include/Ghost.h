@@ -14,9 +14,11 @@ class Ghost{
   Ogre::Entity* getEntity() const{return _ent;}
   Ogre::Vector3 getStartPos() const {return _startPos;}
   double getSpeed() const {return _speed;}
+  bool canEat() const{return _canEat;}
   void setSpeed(double speed);
   void setMove(Ogre::Vector3 move);
   void setEntity(Ogre::Entity* ent);
+  void setCanEat(bool b);
 
  private:
   Ogre::Vector3 _move;
@@ -25,6 +27,7 @@ class Ghost{
   Ogre::Entity* _ent;
   std::pair<int, int> _start;
   double _speed;
+  bool _canEat;
 };
 
 #endif
