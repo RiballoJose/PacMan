@@ -31,10 +31,6 @@ PlayState::enter ()
 void 
 PlayState::createOverlay()
 {
-<<<<<<< HEAD
-=======
-
->>>>>>> ee9decfc207da009f20e326e8d72a9805d3adc53
   _ovJuego = _overlayManager->getByName("Juego");
   _ovPunt = _overlayManager->getOverlayElement("Puntuacion");
   _ovVida = _overlayManager->getOverlayElement("Vida");
@@ -67,10 +63,6 @@ PlayState::createScene()
     ent = _sceneMgr->createEntity("Pacman.mesh");
     nodo->attachObject(ent);
     _lifes.push_back(nodo);
-<<<<<<< HEAD
-=======
-
->>>>>>> ee9decfc207da009f20e326e8d72a9805d3adc53
     bloq.str("");
   }
   aux = -14;
@@ -90,12 +82,9 @@ PlayState::createScene()
       case 1://muros
 	bloq << "Wall(" << f << "," << c << ")";
 	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
-<<<<<<< HEAD
-	ent = _sceneMgr->createEntity(bloq.str(), "Cube.mesh");
+	//ent = _sceneMgr->createEntity(bloq.str(), "Cube.mesh");
 	//ent->setMaterialName("offset.material");
-=======
 	ent = _sceneMgr->createEntity(bloq.str(), "Muro.mesh");
->>>>>>> ee9decfc207da009f20e326e8d72a9805d3adc53
 	nodo->setScale(0.5, 0.5, 0.5);
 	nodo->attachObject(ent);
 	_wallRows->push_back(f);
@@ -360,12 +349,8 @@ PlayState::pacmanMove()
 	  nodo->removeAndDestroyAllChildren();
 	  _sceneMgr->destroySceneNode(nodo);
 	  _pacSpeed = 3.5;
-<<<<<<< HEAD
 	  //_endLevel = true;//para probar a pasar de nivel rapido
 	  canEat(true);
-=======
-	  _canEat = true;
->>>>>>> ee9decfc207da009f20e326e8d72a9805d3adc53
 	  eating();
 	}
       }
@@ -462,7 +447,7 @@ PlayState::ghostMove(Ghost* ghost)
   std::vector<GraphVertex*>vertexes;
   GraphVertex* vert;
   GraphVertex* next;
-  int dist = 10000;
+  //int dist = 10000;
   double intX, intZ;
   double decX = 0.0;
   double decZ = 0.0;
