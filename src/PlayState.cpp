@@ -84,7 +84,7 @@ PlayState::createScene()
 	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	//ent = _sceneMgr->createEntity(bloq.str(), "Cube.mesh");
 	//ent->setMaterialName("offset.material");
-	ent = _sceneMgr->createEntity(bloq.str(), "Muro.mesh");
+	ent = _sceneMgr->createEntity(bloq.str(), "Muro_tex.mesh");
 	nodo->setScale(0.5, 0.5, 0.5);
 	nodo->attachObject(ent);
 	_wallRows->push_back(f);
