@@ -31,6 +31,10 @@ PlayState::enter ()
 void 
 PlayState::createOverlay()
 {
+<<<<<<< HEAD
+=======
+
+>>>>>>> ee9decfc207da009f20e326e8d72a9805d3adc53
   _ovJuego = _overlayManager->getByName("Juego");
   _ovPunt = _overlayManager->getOverlayElement("Puntuacion");
   _ovVida = _overlayManager->getOverlayElement("Vida");
@@ -63,6 +67,10 @@ PlayState::createScene()
     ent = _sceneMgr->createEntity("Pacman.mesh");
     nodo->attachObject(ent);
     _lifes.push_back(nodo);
+<<<<<<< HEAD
+=======
+
+>>>>>>> ee9decfc207da009f20e326e8d72a9805d3adc53
     bloq.str("");
   }
   aux = -14;
@@ -82,8 +90,12 @@ PlayState::createScene()
       case 1://muros
 	bloq << "Wall(" << f << "," << c << ")";
 	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+<<<<<<< HEAD
 	ent = _sceneMgr->createEntity(bloq.str(), "Cube.mesh");
 	//ent->setMaterialName("offset.material");
+=======
+	ent = _sceneMgr->createEntity(bloq.str(), "Muro.mesh");
+>>>>>>> ee9decfc207da009f20e326e8d72a9805d3adc53
 	nodo->setScale(0.5, 0.5, 0.5);
 	nodo->attachObject(ent);
 	_wallRows->push_back(f);
@@ -227,14 +239,11 @@ PlayState::calculateAdjs(){
   bool wall = false;
   bool vertex = false;
   for (it = vertexes.begin(); it != vertexes.end(); ++it){
-    //std::cout << (*it)->getData().getZ() <<  "," << (*it)->getData().getX() << " enlaza con:" << '\n';
     for(int f = (*it)->getData().getZ()+1; f < (_currentLevel+1)*31 and (!wall and ! vertex); f++){
       if (_levels[f][(*it)->getData().getX()]==1){wall = true;}
       else if((aux = _level->getVertex(f, (*it)->getData().getX()))!=NULL){
 	vertex = true;
 	_level->addEdge((*it), aux);
-	//std::cout << (*it)->getData().getZ() <<  "," << (*it)->getData().getX() << " enlaza vertical con ";
-	//std::cout << aux->getData().getZ() << "," <<  aux->getData().getX() << '\n';
       }
     }
     wall = vertex = false;
@@ -243,8 +252,6 @@ PlayState::calculateAdjs(){
       else if((aux = _level->getVertex((*it)->getData().getZ(), c))!=NULL){
 	vertex = true;
 	_level->addEdge((*it), aux);
-	//std::cout << (*it)->getData().getZ() <<  "," << (*it)->getData().getX() << " enlaza horizontal con ";
-	//std::cout << aux->getData().getZ() << "," <<  aux->getData().getX() << '\n';
       }
     }
     wall = vertex = false;
@@ -353,8 +360,12 @@ PlayState::pacmanMove()
 	  nodo->removeAndDestroyAllChildren();
 	  _sceneMgr->destroySceneNode(nodo);
 	  _pacSpeed = 3.5;
+<<<<<<< HEAD
 	  //_endLevel = true;//para probar a pasar de nivel rapido
 	  canEat(true);
+=======
+	  _canEat = true;
+>>>>>>> ee9decfc207da009f20e326e8d72a9805d3adc53
 	  eating();
 	}
       }
@@ -519,7 +530,6 @@ PlayState::removeLevel()
   _level->getEdges().clear();
   destroyAllAttachedMovableObjects(_sceneMgr->getRootSceneNode());
   _sceneMgr->getRootSceneNode()->removeAndDestroyAllChildren();
-  //_score = 0;
   _endLevel = false;
 }
 void
@@ -634,28 +644,24 @@ PlayState::keyPressed
     _prevDir = _currentDir;
     _currentDir = 1;
     _nextDir = 1;
-    //_pacman->yaw((_currentDir-_prevDir)*Ogre::Degree(90));
     break;
   case OIS::KC_LEFT:
     _pacman->lookAt(Ogre::Vector3(0,0,-999), _pacman->TS_WORLD);
     _prevDir = _currentDir;
     _currentDir = 3;
     _nextDir = 3;
-    //_pacman->yaw((_currentDir-_prevDir)*Ogre::Degree(90));
     break;
   case OIS::KC_UP:
     _pacman->lookAt(Ogre::Vector3(-999,0,0), _pacman->TS_WORLD);
     _prevDir = _currentDir;
     _currentDir = 4;
     _nextDir = 4;
-    //_pacman->yaw((_currentDir-_prevDir)*Ogre::Degree(90));
     break;
   case OIS::KC_DOWN:
     _pacman->lookAt(Ogre::Vector3(999,0,0), _pacman->TS_WORLD);
     _prevDir = _currentDir;
     _currentDir = 2;
     _nextDir = 2;
-    //_pacman->yaw((_currentDir-_prevDir)*Ogre::Degree(90));
     break;
   default:
     break;
