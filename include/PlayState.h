@@ -67,6 +67,8 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   void calculateAdjs();
   void canEat(bool b);
   void eating();
+  void flicker();
+  void blinking();
 
  protected:
   Ogre::Root* _root;

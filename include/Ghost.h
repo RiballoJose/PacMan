@@ -15,10 +15,13 @@ class Ghost{
   Ogre::Vector3 getStartPos() const {return _startPos;}
   double getSpeed() const {return _speed;}
   bool canEat() const{return _canEat;}
+  bool blinking() const{return _blinking;}
   void setSpeed(double speed);
   void setMove(Ogre::Vector3 move);
   void setEntity(Ogre::Entity* ent);
   void setCanEat(bool b);
+  void setBlink();
+  void setBlink(bool b);
 
  private:
   Ogre::Vector3 _move;
@@ -28,6 +31,7 @@ class Ghost{
   std::pair<int, int> _start;
   double _speed;
   bool _canEat;
+  bool _blinking;
 };
 
 #endif

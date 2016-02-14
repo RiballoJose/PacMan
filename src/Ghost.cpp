@@ -9,6 +9,7 @@ Ghost::Ghost(Ogre::SceneNode* node, Ogre::Entity* ent, int startZ, int startX, d
   _speed = speed;
   _startPos = start;
   _canEat = false;
+  _blinking = false;
 }
 
 Ghost::~Ghost(){
@@ -20,3 +21,11 @@ void Ghost::setSpeed(double speed){_speed = speed;}
 void Ghost::setMove(Ogre::Vector3 move){_move = move;}
 void Ghost::setEntity(Ogre::Entity* ent){_ent = ent;}
 void Ghost::setCanEat(bool b){_canEat=b;}
+void Ghost::setBlink()
+{
+  if(_blinking)
+    _blinking=false;
+  else
+    _blinking=true;
+}
+void Ghost::setBlink(bool b){_blinking=b;}

@@ -297,17 +297,33 @@ void
 PlayState::pacmanMove()
 {
   if(hit(_blinky)){
-    if(_blinky->canEat()){_blinky->setCanEat(false);resetGhost(_blinky);_score+=50;}
-    else{died();}
+    if(_blinky->canEat()){
+      _blinky->setCanEat(false);
+      resetGhost(_blinky);
+      _score+=50;
+      _blinky->setBlink(false);
+    }else{died();}
   }if(hit(_inky)){
-    if(_inky->canEat()){_inky->setCanEat(false);resetGhost(_inky);_score+=50;}
-    else{died();}
+    if(_inky->canEat()){
+      _inky->setCanEat(false);
+      resetGhost(_inky);
+      _score+=50;
+      _inky->setBlink(false);
+    }else{died();}
   }if(hit(_pinky)){
-    if(_pinky->canEat()){_pinky->setCanEat(false);resetGhost(_pinky);_score+=50;}
-    else{died();}
+    if(_pinky->canEat()){
+      _pinky->setCanEat(false);
+      resetGhost(_pinky);
+      _score+=50;
+      _pinky->setBlink(false);
+    }else{died();}
   }if(hit(_clyde)){
-    if(_clyde->canEat()){_clyde->setCanEat(false);resetGhost(_clyde);_score+=50;}
-    else{died();}
+    if(_clyde->canEat()){
+      _clyde->setCanEat(false);
+      resetGhost(_clyde);
+      _score+=50;
+      _clyde->setBlink(false);
+    }else{died();}
   }
   else{    
     if(_currentDir == 1 and !colisionMap(0, _pacman)){_pacMove.x = 1;}
@@ -317,7 +333,8 @@ PlayState::pacmanMove()
     _pacman->translate(_pacMove*_deltaT*_pacSpeed);
     _currentRow = (int)(_pacman->getPosition().z+_startRow+0.5);
     _currentCol = (int)(_pacman->getPosition().x+_startCol);
-    if(_pacSpeed>2.5){_pacSpeed-=0.0015;}
+    if(_pacSpeed>2.75){_pacSpeed-=0.0015;}
+    else if(_pacSpeed>2.5){blinking();_pacSpeed-=0.0015;}
     else{canEat(false);eating();}
     if (_levels[(int)_currentRow][(int)_currentCol]==2){
       Ogre::SceneNode* nodo = NULL;
@@ -369,6 +386,57 @@ PlayState::pacmanMove()
 	else{_pacman->translate(0,0,-29);}
       }
     }
+  }
+}
+
+void
+PlayState::blinking()
+{
+  if(_blinky->canEat())
+    _blinky->setBlink();
+  if(_pinky->canEat())
+    _pinky->setBlink();
+  if(_inky->canEat())
+    _inky->setBlink();
+  if(_clyde->canEat())
+    _clyde->setBlink();
+  flicker();
+}
+void
+PlayState::flicker()
+{
+  Ogre::Entity* pieza;
+  if(_blinky->blinking()){
+    pieza = static_cast<Ogre::Entity*>(_blinky->getNode()->getAttachedObject(0));
+    pieza->setMaterialName("F_comer_mat");
+  }
+  else{
+    pieza = static_cast<Ogre::Entity*>(_blinky->getNode()->getAttachedObject(0));
+    pieza->setMaterialName("F_rojo_mat");
+  }
+  if(_inky->blinking()){
+    pieza = static_cast<Ogre::Entity*>(_inky->getNode()->getAttachedObject(0));
+    pieza->setMaterialName("F_comer_mat");
+  }
+  else{ 
+    pieza = static_cast<Ogre::Entity*>(_inky->getNode()->getAttachedObject(0));
+    pieza->setMaterialName("F_azul_mat");
+  }
+  if(_pinky->blinking()){
+    pieza = static_cast<Ogre::Entity*>(_pinky->getNode()->getAttachedObject(0));
+    pieza->setMaterialName("F_comer_mat");
+  }
+  else{
+    pieza = static_cast<Ogre::Entity*>(_pinky->getNode()->getAttachedObject(0));
+    pieza->setMaterialName("F_rosa_mat");
+  }
+  if(_clyde->blinking()){
+    pieza = static_cast<Ogre::Entity*>(_clyde->getNode()->getAttachedObject(0));
+    pieza->setMaterialName("F_comer_mat");
+  }
+  else{
+    pieza = static_cast<Ogre::Entity*>(_clyde->getNode()->getAttachedObject(0));
+    pieza->setMaterialName("F_naranja_mat");
   }
 }
 void
