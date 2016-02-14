@@ -53,11 +53,10 @@ PlayState::createScene()
   std::stringstream bloq, material;
   bloq.str("");
 
-   _mainTrack = _pTrackManager->load("Background.ogg");
-  //_simpleEffect = _pSoundFXManager->load("nightmare.wav");
+  _mainTrack = _pTrackManager->load("Background.ogg");
+  _simpleEffect = _pSoundFXManager->load("Efecto.ogg");
 
-  //_pTrackManager->load("Background.ogg")->play();
-
+  
   _pacmanDef = false;
   _perspective = 0;
   _camera->setPosition(Ogre::Vector3(0, 42, 7));
@@ -725,24 +724,28 @@ PlayState::keyPressed
       }
       break;
   case OIS::KC_RIGHT:
+    _simpleEffect->play();
     _pacman->lookAt(Ogre::Vector3(0,0,999), _pacman->TS_WORLD);
     _prevDir = _currentDir;
     _currentDir = 1;
     _nextDir = 1;
     break;
   case OIS::KC_LEFT:
+    _simpleEffect->play();
     _pacman->lookAt(Ogre::Vector3(0,0,-999), _pacman->TS_WORLD);
     _prevDir = _currentDir;
     _currentDir = 3;
     _nextDir = 3;
     break;
   case OIS::KC_UP:
+    _simpleEffect->play();
     _pacman->lookAt(Ogre::Vector3(-999,0,0), _pacman->TS_WORLD);
     _prevDir = _currentDir;
     _currentDir = 4;
     _nextDir = 4;
     break;
   case OIS::KC_DOWN:
+    _simpleEffect->play();
     _pacman->lookAt(Ogre::Vector3(999,0,0), _pacman->TS_WORLD);
     _prevDir = _currentDir;
     _currentDir = 2;
