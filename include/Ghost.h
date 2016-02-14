@@ -5,9 +5,10 @@
 
 class Ghost{
  public:
-  Ghost (Ogre::SceneNode* node, Ogre::Entity* ent, int f, int c, double speed, Ogre::Vector3 start);
+  Ghost (std::string name, Ogre::SceneNode* node, Ogre::Entity* ent, int f, int c, double speed, Ogre::Vector3 start);
   ~Ghost ();
 
+  std::string name() const {return _name;}
   std::pair<int,int> getStart() const {return _start;}
   Ogre::Vector3 getMove() const{return _move;}
   Ogre::SceneNode* getNode() const{return _node;}
@@ -24,6 +25,7 @@ class Ghost{
   void setBlink(bool b);
 
  private:
+  std::string _name;
   Ogre::Vector3 _move;
   Ogre::Vector3 _startPos;
   Ogre::SceneNode* _node;

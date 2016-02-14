@@ -1,7 +1,8 @@
 #include <Ghost.h>
 
-Ghost::Ghost(Ogre::SceneNode* node, Ogre::Entity* ent, int startZ, int startX, double speed, Ogre::Vector3 start)
+Ghost::Ghost(std::string name, Ogre::SceneNode* node, Ogre::Entity* ent, int startZ, int startX, double speed, Ogre::Vector3 start)
 {
+  _name = name;
   _node = node;
   _ent = ent;
   _start.first = startZ;
