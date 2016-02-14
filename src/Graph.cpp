@@ -107,8 +107,8 @@ Ogre::Vector3
 Graph::getMove(GraphVertex* pOrigin, GraphVertex* pDestination)
 {
   Ogre::Vector3 move (0,0,0);
-  std::cout << "Origen.z = " << pOrigin->getData().getZ() << "; Origen.x = " << pOrigin->getData().getX() << '\t';
-  std::cout << "Destino.z = " << pDestination->getData().getZ() << "; Destino.x = " << pDestination->getData().getX() << '\n';
+  /*std::cout << "Origen.z = " << pOrigin->getData().getZ() << "; Origen.x = " << pOrigin->getData().getX() << '\t';
+    std::cout << "Destino.z = " << pDestination->getData().getZ() << "; Destino.x = " << pDestination->getData().getX() << '\n';*/
   move.y = std::abs(((pDestination->getData().getX() - pOrigin->getData().getX()))+
 		    ((pDestination->getData().getZ() - pOrigin->getData().getZ())));
   if((pDestination->getData().getX() - pOrigin->getData().getX())>0)
