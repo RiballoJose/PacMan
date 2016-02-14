@@ -29,6 +29,8 @@
 #include "EndState.h"
 #include "Graph.h"
 #include "Ghost.h"
+#include "TrackManager.h"
+#include "SoundFXManager.h"
 
 
 class PlayState : public Ogre::Singleton<PlayState>, public GameState
@@ -101,6 +103,11 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   Ogre::OverlayManager* _overlayManager;
   Ogre::Overlay *_ovJuego;
   Ogre::OverlayElement *_ovPunt, *_ovVida, *_ovScore;
+
+  TrackPtr _mainTrack;
+  SoundFXPtr _simpleEffect;
+  TrackManager* _pTrackManager;
+  SoundFXManager* _pSoundFXManager;
 
   Graph* _level;
 

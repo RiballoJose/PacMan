@@ -31,6 +31,8 @@
 #include <OIS/OIS.h>
 
 #include "InputManager.h"
+#include "TrackManager.h"
+#include "SoundFXManager.h"
 
 class GameState;
 
@@ -63,6 +65,7 @@ class GameManager : public Ogre::FrameListener, public Ogre::Singleton<GameManag
   // Funciones de configuración.
   void loadResources ();
   bool configure ();
+  bool initSDL();
   
   // Heredados de FrameListener.
   bool frameStarted (const Ogre::FrameEvent& evt);
@@ -78,6 +81,8 @@ class GameManager : public Ogre::FrameListener, public Ogre::Singleton<GameManag
   InputManager *_inputMgr;
   // Estados del juego.
   std::stack<GameState*> _states;
+  TrackManager* _pTrackManager;
+  SoundFXManager* _pSoundFXManager;
 };
 
 #endif

@@ -2,6 +2,8 @@
 
 #include "GameManager.h"
 #include "GameState.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 
 template<> GameManager* Ogre::Singleton<GameManager>::msSingleton = 0;
 
@@ -27,7 +29,10 @@ GameManager::start
 {
   // Creación del objeto Ogre::Root.
   _root = new Ogre::Root();
+  initSDL();
   _overlaySystem = new Ogre::OverlaySystem();
+  _pTrackManager=new TrackManager();
+  _pSoundFXManager=new SoundFXManager();
   loadResources();
 
   if (!configure())
@@ -175,4 +180,22 @@ GameManager::keyReleased
 {
   _states.top()->keyReleased(e);
   return true;
+}
+
+bool GameManager::initSDL () {
+    // Inicializando SDL...
+  std::cout<<"Inicianzo SDL"<<std::endl;
+    if (SDL_Init(SDL_INIT_AUDIO) < 0)
+        return false;
+    // Llamar a  SDL_Quit al terminar.
+    atexit(SDL_Quit);
+
+    // Inicializando SDL mixer...
+    if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT,MIX_DEFAULT_CHANNELS, 4096) < 0)
+      return false;
+
+    // Llamar a Mix_CloseAudio al terminar.
+    atexit(Mix_CloseAudio);
+
+    return true;
 }
