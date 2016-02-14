@@ -11,6 +11,7 @@ Ghost::Ghost(std::string name, Ogre::SceneNode* node, Ogre::Entity* ent, int sta
   _startPos = start;
   _canEat = false;
   _blinking = false;
+  _dist = 0.0;
 }
 
 Ghost::~Ghost(){
@@ -30,3 +31,4 @@ void Ghost::setBlink()
     _blinking=true;
 }
 void Ghost::setBlink(bool b){_blinking=b;}
+void Ghost::setDist(double d){_dist = d;}

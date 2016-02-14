@@ -15,6 +15,7 @@ class Ghost{
   Ogre::Entity* getEntity() const{return _ent;}
   Ogre::Vector3 getStartPos() const {return _startPos;}
   double getSpeed() const {return _speed;}
+  double getDist() const {return _dist;}
   bool canEat() const{return _canEat;}
   bool blinking() const{return _blinking;}
   void setSpeed(double speed);
@@ -23,6 +24,7 @@ class Ghost{
   void setCanEat(bool b);
   void setBlink();
   void setBlink(bool b);
+  void setDist(double d);
 
  private:
   std::string _name;
@@ -34,6 +36,7 @@ class Ghost{
   double _speed;
   bool _canEat;
   bool _blinking;
+  double _dist;
 };
 
 #endif

@@ -113,7 +113,7 @@ PlayState::createScene()
 	  ent->setMaterialName("F_rojo_mat");
 	  _blinky = new Ghost("Blinky", _sceneMgr->getRootSceneNode()->
 			      createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12))),
-			      ent, f-(((f-_currentLevel*31))-12), c-aux, 0.8, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+			      ent, f-(((f-_currentLevel*31))-12), c-aux, 2.8, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  _blinky->getNode()->setScale(1.0, 1.0, 1.0);
 	  _blinky->getNode()->attachObject(ent);
 	  break;
@@ -523,11 +523,14 @@ PlayState::ghostMove(Ghost* ghost)
   double intX, intZ;
   double decX = 0.0;
   double decZ = 0.0;
-  
+  Ogre::Vector3 move (0,0,0);
+  ghost->setDist(ghost->getDist() - ghost->getSpeed()*_deltaT);
+  //std::cout << "Distancia del fantasma " << ghost->name() << " = " << ghost->getDist() << std::endl;
   decX = (std::modf(ghost->getNode()->getPosition().x, &intX));
   decZ = (std::modf(ghost->getNode()->getPosition().z, &intZ));
-  if(((std::abs(decZ) <_deltaT) or (std::abs(decZ) >1-_deltaT)) and
-     ((std::abs(decX) <_deltaT) or (std::abs(decX) >1-_deltaT)) and
+  if(ghost->getDist()<_deltaT and 
+     /*((std::abs(decZ) <_deltaT) or (std::abs(decZ) >1-_deltaT)) and
+       ((std::abs(decX) <_deltaT) or (std::abs(decX) >1-_deltaT)) and*/
      (vert = _level->getVertex(ghost->getStart().first+ghost->getNode()->getPosition().z+_deltaT,
 			       ghost->getStart().second+ghost->getNode()->getPosition().x+_deltaT))!=NULL){
     vertexes = _level->getLinks(vert);
@@ -553,9 +556,11 @@ PlayState::ghostMove(Ghost* ghost)
 	    next = (*it);
 	  }
       }
-      std::cout << "Distancia = " << dist << " del ghost " << ghost->name() << std::endl;
+      //std::cout << "Distancia = " << dist << " del ghost " << ghost->name() << std::endl;
     }
-    ghost->setMove(_level->getMove(vert, next));//vertexes.at(rand()%vertexes.size())));
+    move = _level->getMove(vert,next);
+    ghost->setDist(move.y);move.y = 0;
+    ghost->setMove(move);//_level->getMove(vert, next));//vertexes.at(rand()%vertexes.size())));
     if(ghost->getMove().x==0){
       if(std::abs(decX) > 0 and std::abs(decX)<0.5)
 	ghost->getNode()->setPosition(Ogre::Vector3(ghost->getNode()->getPosition().x-decX, 0.5, ghost->getNode()->getPosition().z));
