@@ -8,8 +8,6 @@ using namespace Ogre::OverlayElementCommands;
 void
 PlayState::enter ()
 {
-
-
   _root = Ogre::Root::getSingletonPtr();
   _sceneMgr = _root->getSceneManager("SceneManager");
   _sceneMgr->addRenderQueueListener(GameManager::getSingletonPtr()->getOverlaySystem());
@@ -18,7 +16,7 @@ PlayState::enter ()
   _currentLevel = 0;
   _pacSpeed = 2.5;
   _currentDir = _nextDir = _prevDir = _prevCol = _prevRow = 0;
-  _nPacDots = _score = 0;
+  _nPacDots = _score = _canDied = 0;
   _canEat = false;
   _camera = _sceneMgr->getCamera("IntroCamera");
   _viewport = _root->getAutoCreatedWindow()->addViewport(_camera);
@@ -33,7 +31,6 @@ PlayState::enter ()
   createOverlay();
 
   _mainTrack->play();
-
 
   _endLevel = _exitGame = false;
 }
@@ -65,8 +62,6 @@ PlayState::createScene()
   _perspective = 0;
   _camera->setPosition(Ogre::Vector3(0, 42, 7));
   _camera->lookAt(Ogre::Vector3(0, -50, 0));
-
-
   
   nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode("Escenario", Ogre::Vector3(-0.5,0.0,3.0));
   ent = _sceneMgr->createEntity("Base.mesh");
@@ -317,28 +312,28 @@ PlayState::frameStarted
 void
 PlayState::pacmanMove()
 {
-  if(hit(_blinky)){
+  if(hit(_blinky) and _canDied < _deltaT){
     if(_blinky->canEat()){
       _blinky->setCanEat(false);
       resetGhost(_blinky);
       _score+=50;
       _blinky->setBlink(false);
     }else{died();}
-  }if(hit(_inky)){
+  }if(hit(_inky) and _canDied < _deltaT){
     if(_inky->canEat()){
       _inky->setCanEat(false);
       resetGhost(_inky);
       _score+=50;
       _inky->setBlink(false);
     }else{died();}
-  }if(hit(_pinky)){
+  }if(hit(_pinky) and _canDied < _deltaT){
     if(_pinky->canEat()){
       _pinky->setCanEat(false);
       resetGhost(_pinky);
       _score+=50;
       _pinky->setBlink(false);
     }else{died();}
-  }if(hit(_clyde)){
+  }if(hit(_clyde) and _canDied < _deltaT){
     if(_clyde->canEat()){
       _clyde->setCanEat(false);
       resetGhost(_clyde);
@@ -354,6 +349,8 @@ PlayState::pacmanMove()
     _pacman->translate(_pacMove*_deltaT*_pacSpeed);
     _currentRow = (int)(_pacman->getPosition().z+_startRow+0.5);
     _currentCol = (int)(_pacman->getPosition().x+_startCol);
+    if(_canDied > 0){_canDied-=_deltaT;_pacman->setVisible(rand()%2);}
+    else{_canDied = 0; _pacman->setVisible(true);}
     if(_pacSpeed>2.75){_pacSpeed-=0.0015;}
     else if(_pacSpeed>2.5){blinking();_pacSpeed-=0.0015;}
     else{canEat(false);eating();}
@@ -511,6 +508,7 @@ PlayState::died()
       _lifes.pop_back();
       _pacman->setPosition(_startPos);
       _currentDir = _prevDir = 0;
+      _canDied = 3;
     }
   else{_exitGame = true;}
 }

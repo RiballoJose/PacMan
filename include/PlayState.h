@@ -83,7 +83,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   int _hits, _filas, _columnas, _currentDir, _nextDir, _prevDir,
     _currentLevel, _perspective, _nwalls, _nPacDots, _score;
   double _pacSpeed, _startRow, _currentRow, _startCol,
-    _currentCol, _prevRow, _prevCol;
+    _currentCol, _prevRow, _prevCol, _canDied;
   bool _exitGame,  _endLevel, _pacmanDef, _canEat;
 
   Ogre::Real _deltaT;
