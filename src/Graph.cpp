@@ -107,10 +107,20 @@ Ogre::Vector3
 Graph::getMove(GraphVertex* pOrigin, GraphVertex* pDestination)
 {
   Ogre::Vector3 move (0,0,0);
+  std::cout << "Origen.z = " << pOrigin->getData().getZ() << "; Origen.x = " << pOrigin->getData().getX() << '\t';
+  std::cout << "Destino.z = " << pDestination->getData().getZ() << "; Destino.x = " << pDestination->getData().getX() << '\n';
   move.y = std::abs(((pDestination->getData().getX() - pOrigin->getData().getX()))+
 		    ((pDestination->getData().getZ() - pOrigin->getData().getZ())));
-  move.x = ((pDestination->getData().getX() - pOrigin->getData().getX())%2);
-  move.z = ((pDestination->getData().getZ() - pOrigin->getData().getZ())%2);
+  if((pDestination->getData().getX() - pOrigin->getData().getX())>0)
+    move.x=1;
+  else if((pDestination->getData().getX() - pOrigin->getData().getX()) < 0)
+    move.x=-1;
+  else if((pDestination->getData().getZ() - pOrigin->getData().getZ()) > 0)
+    move.z=1;
+  else if((pDestination->getData().getZ() - pOrigin->getData().getZ()) < 0)
+    move.z=-1;
+  //move.x = ((pDestination->getData().getX() - pOrigin->getData().getX())%2);
+  //move.z = ((pDestination->getData().getZ() - pOrigin->getData().getZ())%2);
   //std::cout << "Move.z = " << move.z << "; Move.x = " << move.x << '\n';
   return move;
 }
