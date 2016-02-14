@@ -130,7 +130,7 @@ PlayState::createScene()
 	  ent->setMaterialName("F_rojo_mat");
 	  _blinky = new Ghost("Blinky", _sceneMgr->getRootSceneNode()->
 			      createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12))),
-			      ent, f-(((f-_currentLevel*31))-12), c-aux, 2.8, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+			      ent, f-(((f-_currentLevel*31))-12), c-aux, 1.5, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  _blinky->getNode()->setScale(1.0, 1.0, 1.0);
 	  _blinky->getNode()->attachObject(ent);
 	  break;
@@ -140,7 +140,7 @@ PlayState::createScene()
 	  ent->setMaterialName("F_rosa_mat");
 	  _pinky = new Ghost("Pinky", _sceneMgr->getRootSceneNode()->
 			     createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12))),
-			     ent, f-(((f-_currentLevel*31))-12), c-aux, 1.0, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+			     ent, f-(((f-_currentLevel*31))-12), c-aux, 1.8, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  _pinky->getNode()->setScale(1.0, 1.0, 1.0);
 	  _pinky->getNode()->attachObject(ent);
 	  break;
@@ -150,7 +150,7 @@ PlayState::createScene()
 	  ent->setMaterialName("F_azul_mat");
 	  _inky = new Ghost("Inky", _sceneMgr->getRootSceneNode()->
 			    createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12))),
-			    ent, f-(((f-_currentLevel*31))-12), c-aux, 1.0, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+			    ent, f-(((f-_currentLevel*31))-12), c-aux, 1.7, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  _inky->getNode()->setScale(1.0, 1.0, 1.0);
 	  _inky->getNode()->attachObject(ent);
 	  break;
@@ -160,7 +160,7 @@ PlayState::createScene()
 	  ent->setMaterialName("F_naranja_mat");
 	  _clyde = new Ghost("Clyde", _sceneMgr->getRootSceneNode()->
 			     createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12))),
-			     ent, f-(((f-_currentLevel*31))-12), c-aux, 1.0, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
+			     ent, f-(((f-_currentLevel*31))-12), c-aux, 1.6, Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	  _clyde->getNode()->setScale(1.0, 1.0, 1.0);
 	  _clyde->getNode()->attachObject(ent);
 	  break;
@@ -545,11 +545,11 @@ PlayState::ghostMove(Ghost* ghost)
   //std::cout << "Distancia del fantasma " << ghost->name() << " = " << ghost->getDist() << std::endl;
   decX = (std::modf(ghost->getNode()->getPosition().x, &intX));
   decZ = (std::modf(ghost->getNode()->getPosition().z, &intZ));
-  if(ghost->getDist()<_deltaT and 
-     /*((std::abs(decZ) <_deltaT) or (std::abs(decZ) >1-_deltaT)) and
-       ((std::abs(decX) <_deltaT) or (std::abs(decX) >1-_deltaT)) and*/
-     (vert = _level->getVertex(ghost->getStart().first+ghost->getNode()->getPosition().z+_deltaT,
-			       ghost->getStart().second+ghost->getNode()->getPosition().x+_deltaT))!=NULL){
+  if((ghost->getDist()<_deltaT or
+      (((std::abs(decZ) <_deltaT) or (std::abs(decZ) >1-_deltaT)) and
+       ((std::abs(decX) <_deltaT) or (std::abs(decX) >1-_deltaT)))) and
+     (vert = _level->getVertex(ghost->getStart().first+ghost->getNode()->getPosition().z+0.5,
+			       ghost->getStart().second+ghost->getNode()->getPosition().x+0.5))!=NULL){
     vertexes = _level->getLinks(vert);
     next = vertexes.at(rand()%vertexes.size());
     if(ghost->canEat())
