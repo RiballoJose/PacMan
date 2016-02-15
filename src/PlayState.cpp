@@ -30,6 +30,9 @@ PlayState::enter ()
   createScene();
   createOverlay();
 
+  std::cout << "Hola" << std::endl;
+
+  
   _mainTrack->play();
 
   _endLevel = _exitGame = false;
@@ -111,8 +114,10 @@ PlayState::createScene()
 	break;
       case 3://comefantasmas
 	bloq << "Power-Pellet(" << f << "," << c << ")";
+  std::cout << bloq.str() << std::endl;
 	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
+  anim.push_back(bloq.str());
 	nodo->setScale(1.0, 1.0, 1.0);
 	nodo->attachObject(ent);
 	break;
@@ -295,6 +300,7 @@ PlayState::frameStarted
   _deltaT = evt.timeSinceLastFrame;
   _ovScore->setCaption(Ogre::StringConverter::toString(_score));
   if(!_exitGame and !_endLevel){
+    animar();
     pacmanMove();
     ghostMove(_blinky);
     ghostMove(_pinky);
@@ -804,4 +810,33 @@ PlayState::LoadLevels()
     }
     file.close();
   }
+}
+
+void PlayState::animar(){
+  _animState = _sceneMgr->getEntity("Power-Pellet(4,1)")->getAnimationState("Saltar");
+  _animState->setEnabled(true);
+  _animState->setLoop(true);
+  if (_animState != NULL) {
+    if (_animState->hasEnded()) {
+      _animState->setTimePosition(0.0);
+      _animState->setEnabled(false);
+    }
+    else {
+      _animState->addTime(_deltaT);
+    }
+  }
+
+  _animState = _sceneMgr->getEntity("Pacman")->getAnimationState("Agrandar");
+  _animState->setEnabled(true);
+  _animState->setLoop(true);
+  if (_animState != NULL) {
+    if (_animState->hasEnded()) {
+      _animState->setTimePosition(0.0);
+      _animState->setEnabled(false);
+    }
+    else {
+      _animState->addTime(_deltaT);
+    }
+  }
+
 }

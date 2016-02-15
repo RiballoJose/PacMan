@@ -71,6 +71,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   void eating();
   void flicker();
   void blinking();
+  void animar();
 
  protected:
   Ogre::Root* _root;
@@ -99,6 +100,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   Ghost* _clyde;//naranja
   std::vector<int>* _wallRows;
   std::vector<int>* _wallCols;
+  std::vector<std::string> anim;
   
   Ogre::OverlayManager* _overlayManager;
   Ogre::Overlay *_ovJuego;
@@ -108,6 +110,8 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   SoundFXPtr _simpleEffect;
   TrackManager* _pTrackManager;
   SoundFXManager* _pSoundFXManager;
+
+  Ogre::AnimationState *_animState;
 
   Graph* _level;
 
