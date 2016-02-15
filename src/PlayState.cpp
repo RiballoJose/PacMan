@@ -232,8 +232,8 @@ PlayState::createScene()
   _light->setSpotlightInnerAngle(Ogre::Degree(25.0f));
   _light->setSpotlightOuterAngle(Ogre::Degree(200.0f));
   _light->setPosition(0, 150, 0);
-  _light->setSpecularColour(1, 1, 1);
-  _light->setDiffuseColour(1, 1, 1);
+  _light->setSpecularColour(0.8, 0.8, 0.8);
+  _light->setDiffuseColour(0.8, 0.8, 0.8);
   _light->setSpotlightFalloff(5.0f);
   _light->setCastShadows(true);
 }
@@ -308,7 +308,7 @@ PlayState::frameStarted
   else if(!_exitGame){//nivel terminado
     nextLevel();
   }
-  //else{return false;}
+  else{return false;}
   return true;
 }
 
