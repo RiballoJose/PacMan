@@ -29,9 +29,6 @@ PlayState::enter ()
   LoadLevels();
   createScene();
   createOverlay();
-
-  std::cout << "Hola" << std::endl;
-
   
   _mainTrack->play();
 
@@ -86,6 +83,7 @@ PlayState::createScene()
   int id = 0;
 
   _level = new Graph;
+  _anim = new std::vector <std::string> ();
   for(int f = _currentLevel*(31); f < _currentLevel*(31)+31; f++){
     for(int c = 0; c < _columnas; c++){
       bloq.str("");
@@ -114,10 +112,10 @@ PlayState::createScene()
 	break;
       case 3://comefantasmas
 	bloq << "Power-Pellet(" << f << "," << c << ")";
-  std::cout << bloq.str() << std::endl;
+	//std::cout << bloq.str() << std::endl;
 	nodo = _sceneMgr->getRootSceneNode()->createChildSceneNode(bloq.str(), Ogre::Vector3(aux, 0.5, (((f-_currentLevel*31))-12)));
 	ent = _sceneMgr->createEntity(bloq.str(), "Bola.mesh");
-  anim.push_back(bloq.str());
+	_anim->push_back(bloq.str());
 	nodo->setScale(1.0, 1.0, 1.0);
 	nodo->attachObject(ent);
 	break;
@@ -731,14 +729,14 @@ PlayState::keyPressed
       break;
   case OIS::KC_RIGHT:
     _simpleEffect->play();
-    _pacman->lookAt(Ogre::Vector3(0,0,999), _pacman->TS_WORLD);
+    _pacman->lookAt(Ogre::Vector3(0,0,-999), _pacman->TS_WORLD);
     _prevDir = _currentDir;
     _currentDir = 1;
     _nextDir = 1;
     break;
   case OIS::KC_LEFT:
     _simpleEffect->play();
-    _pacman->lookAt(Ogre::Vector3(0,0,-999), _pacman->TS_WORLD);
+    _pacman->lookAt(Ogre::Vector3(0,0,999), _pacman->TS_WORLD);
     _prevDir = _currentDir;
     _currentDir = 3;
     _nextDir = 3;
@@ -761,7 +759,6 @@ PlayState::keyPressed
     break;
   }
 }
-
 void
 PlayState::keyReleased
 (const OIS::KeyEvent &e)
@@ -813,19 +810,21 @@ PlayState::LoadLevels()
 }
 
 void PlayState::animar(){
-  _animState = _sceneMgr->getEntity("Power-Pellet(4,1)")->getAnimationState("Saltar");
-  _animState->setEnabled(true);
-  _animState->setLoop(true);
-  if (_animState != NULL) {
-    if (_animState->hasEnded()) {
-      _animState->setTimePosition(0.0);
-      _animState->setEnabled(false);
-    }
-    else {
-      _animState->addTime(_deltaT);
+  for(std::vector<std::string>::const_iterator it = _anim->begin(); it != _anim->end(); ++it){
+    //std::cout << (*it) << std::endl;
+    _animState = _sceneMgr->getEntity((*it))->getAnimationState("Saltar");
+    _animState->setEnabled(true);
+    _animState->setLoop(true);
+    if (_animState != NULL) {
+      if (_animState->hasEnded()) {
+	_animState->setTimePosition(0.0);
+	_animState->setEnabled(false);
+      }
+      else {
+	_animState->addTime(_deltaT);
+      }
     }
   }
-
   _animState = _sceneMgr->getEntity("Pacman")->getAnimationState("Agrandar");
   _animState->setEnabled(true);
   _animState->setLoop(true);

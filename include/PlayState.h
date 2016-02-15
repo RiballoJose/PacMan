@@ -100,7 +100,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
   Ghost* _clyde;//naranja
   std::vector<int>* _wallRows;
   std::vector<int>* _wallCols;
-  std::vector<std::string> anim;
+  std::vector<std::string>* _anim;
   
   Ogre::OverlayManager* _overlayManager;
   Ogre::Overlay *_ovJuego;
