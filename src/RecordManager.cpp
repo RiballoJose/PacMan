@@ -78,13 +78,13 @@ RecordManager::addRecord(Record rec)
 	rec.setPos(i);
 	_records[i] = rec;
 				
-	if(i < 10){
+	if(i < 6){
 	  aux.setPos(i + 1);
 	  _records[(i + 1)] = aux;
 	}
       }
       else {
-	if((i + 1) > size && (i + 1) <= 10){
+	if((i + 1) > size && (i + 1) <= 6){
 	  rec.setPos(i + 1);
 	  _records[(i + 1)] = rec;
 	}

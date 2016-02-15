@@ -321,28 +321,28 @@ PlayState::pacmanMove()
     if(_blinky->canEat()){
       _blinky->setCanEat(false);
       resetGhost(_blinky);
-      _score+=50;
+      _score+=5;
       _blinky->setBlink(false);
     }else{died();}
   }if(hit(_inky) and _canDied < _deltaT){
     if(_inky->canEat()){
       _inky->setCanEat(false);
       resetGhost(_inky);
-      _score+=50;
+      _score+=5;
       _inky->setBlink(false);
     }else{died();}
   }if(hit(_pinky) and _canDied < _deltaT){
     if(_pinky->canEat()){
       _pinky->setCanEat(false);
       resetGhost(_pinky);
-      _score+=50;
+      _score+=5;
       _pinky->setBlink(false);
     }else{died();}
   }if(hit(_clyde) and _canDied < _deltaT){
     if(_clyde->canEat()){
       _clyde->setCanEat(false);
       resetGhost(_clyde);
-      _score+=50;
+      _score+=5;
       _clyde->setBlink(false);
     }else{died();}
   }
@@ -371,7 +371,7 @@ PlayState::pacmanMove()
 	  nodo->removeAndDestroyAllChildren();
 	  _sceneMgr->destroySceneNode(nodo);
 	  _nPacDots--;
-	  _score += 10;
+	  _score += 1;
 	  _blinky->setSpeed(_blinky->getSpeed()+0.005);
 	}
 	if(_nPacDots<1){_endLevel = true;}
