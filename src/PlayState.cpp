@@ -310,7 +310,7 @@ PlayState::frameStarted
   else if(!_exitGame){//nivel terminado
     nextLevel();
   }
-  else{return false;}
+  //else{return false;}
   return true;
 }
 
@@ -691,7 +691,7 @@ PlayState::frameEnded
 (const Ogre::FrameEvent& evt)
 {
   if (_exitGame){
-    std::cout << _score << std::endl;
+    //std::cout << _score << std::endl;
     EndState::getSingletonPtr()->addScore(_score);
     pushState(EndState::getSingletonPtr());
     //return false;

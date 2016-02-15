@@ -19,6 +19,8 @@ IntroState::enter ()
   _viewport = _root->getAutoCreatedWindow()->addViewport(_camera);
   _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 0.0));
 
+  
+  RecordManager::getSingletonPtr()->loadRecords();
   createScene();
   _exitGame = false;
 }
@@ -94,7 +96,7 @@ void
 IntroState::keyPressed
 (const OIS::KeyEvent &e)
 {
-  if (e.key == OIS::KC_RETURN) {
+  if (e.key == OIS::KC_RETURN or e.key == OIS::KC_SPACE) {
     changeState(MenuState::getSingletonPtr());
   }
 }

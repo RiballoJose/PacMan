@@ -97,7 +97,7 @@ RecordManager::addRecord(Record rec)
 Ogre::String
 RecordManager::toString()
 {
-  loadRecords();
+  //loadRecords();
   std::stringstream aux;
   for (std::map<int, Record>::iterator it = _records.begin(); 
        it != _records.end(); ++it){

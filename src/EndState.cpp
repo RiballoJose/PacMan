@@ -117,6 +117,8 @@ void EndState::keyPressed(const OIS::KeyEvent &e){
   case OIS::KC_SPACE:
     _endGame = true;
     break;
+  case OIS::KC_RETURN:
+    _endGame = true;
   default:
     break;
   }
